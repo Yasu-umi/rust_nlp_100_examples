@@ -1,0 +1,74 @@
+[package]
+name = "nlp_100_examples"
+version = "0.1.0"
+authors = ["Yasu_umiNishikawa <yasu.umi.19910101@gmail.com>"]
+
+[dependencies]
+rand = "*"
+hyper = "*"
+hyper-native-tls = "*"
+flate2 = "*"
+serde_json = "*"
+regex = "*"
+
+[dependencies.url]
+git = "https://github.com/servo/rust-url"
+
+
+[[bin]]
+name = "example_000"
+path = "src/example_000.rs"
+[[bin]]
+name = "example_001"
+path = "src/example_001.rs"
+[[bin]]
+name = "example_002"
+path = "src/example_002.rs"
+[[bin]]
+name = "example_003"
+path = "src/example_003.rs"
+[[bin]]
+name = "example_005"
+path = "src/example_005.rs"
+[[bin]]
+name = "example_006"
+path = "src/example_006.rs"
+[[bin]]
+name = "example_007"
+path = "src/example_007.rs"
+[[bin]]
+name = "example_008"
+path = "src/example_008.rs"
+[[bin]]
+name = "example_009"
+path = "src/example_009.rs"
+[[bin]]
+name = "example_020"
+path = "src/example_020.rs"
+[[bin]]
+name = "example_021"
+path = "src/example_021.rs"
+[[bin]]
+name = "example_022"
+path = "src/example_022.rs"
+[[bin]]
+name = "example_023"
+path = "src/example_023.rs"
+[[bin]]
+name = "example_024"
+path = "src/example_024.rs"
+[[bin]]
+name = "example_025"
+path = "src/example_025.rs"
+[[bin]]
+name = "example_026"
+path = "src/example_026.rs"
+[[bin]]
+name = "example_027"
+path = "src/example_027.rs"
+[[bin]]
+name = "example_028"
+path = "src/example_028.rs"
+[[bin]]
+name = "example_029"
+path = "src/example_029.rs"
