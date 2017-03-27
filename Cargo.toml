@@ -88,3 +88,6 @@ path = "src/example_033.rs"
 [[bin]]
 name = "example_034"
 path = "src/example_034.rs"
+[[bin]]
+name = "example_035"
+path = "src/example_035.rs"
