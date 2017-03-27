@@ -1,3 +1,6 @@
+[![CircleCI](https://circleci.com/gh/Yasu-umi/rust_nlp_100_examples/tree/master.svg?style=svg)](https://circleci.com/gh/Yasu-umi/rust_nlp_100_examples/tree/master)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+
 build container
 
 ```
