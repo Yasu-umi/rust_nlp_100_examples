@@ -17,8 +17,19 @@ use self::serde_json::Value;
 
 use self::regex::Regex;
 
+
 #[allow(dead_code)]
 pub fn text(url: &str) -> String {
+    let client = Client::new();
+    let req = client.get(url);
+    let mut res = req.send().unwrap();
+    let mut buf = String::new();
+    let _ = res.read_to_string(&mut buf);
+    buf
+}
+
+#[allow(dead_code)]
+pub fn gz_text(url: &str) -> String {
     let client = Client::new();
 
     let mut req = client.get(url);
@@ -35,18 +46,8 @@ pub fn text(url: &str) -> String {
 }
 
 #[allow(dead_code)]
-pub fn gz_text(url: &str) -> String {
-    let client = Client::new();
-    let req = client.get(url);
-    let mut res = req.send().unwrap();
-    let mut buf = String::new();
-    let _ = res.read_to_string(&mut buf);
-    buf
-}
-
-#[allow(dead_code)]
 pub fn gz_json_by_line(url: &str) -> Vec<Value> {
-    let res = self::gz_text(url);
+    let res = gz_text(url);
     let lines: Vec<&str> = res.as_str().trim().split('\n').collect();
     let mut value: Vec<Value> = Vec::new();
     for line in lines {

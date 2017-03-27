@@ -10,6 +10,7 @@ hyper-native-tls = "*"
 flate2 = "*"
 serde_json = "*"
 regex = "*"
+mecab = "*"
 
 [dependencies.url]
 git = "https://github.com/servo/rust-url"
@@ -72,3 +73,6 @@ path = "src/example_028.rs"
 [[bin]]
 name = "example_029"
 path = "src/example_029.rs"
+[[bin]]
+name = "example_030"
+path = "src/example_030.rs"
