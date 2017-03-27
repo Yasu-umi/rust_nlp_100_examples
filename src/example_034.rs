@@ -6,7 +6,7 @@ mod lib;
 fn main() {
   let input = lib::fetch::text("http://www.cl.ecei.tohoku.ac.jp/nlp100/data/neko.txt");
   let mappings = lib::mecab_utils::feature_mappings(input);
-  println!("{}", mappings.len());
+
   let mut nouns: Vec<String> = Vec::new();
   for idx in 0..(mappings.len() - 3) {
     let mapping_0 = mappings.get(idx).unwrap();
@@ -19,6 +19,7 @@ fn main() {
       nouns.push(surface);
     }
   }
+
   for noun in nouns {
     println!("{}", noun)
   }
