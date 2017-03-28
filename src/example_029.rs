@@ -43,7 +43,9 @@ fn main() {
                             ("utf8", ""),
                             ("continue", ""),
                             ("titles", titles.as_str())];
-            let url = hyper::Url::parse(Url::parse_with_params("https://ja.wikipedia.org/w/api.php", options)
+            let url = hyper::Url::parse(Url::parse_with_params("https://ja.wikipedia.org/w/api.\
+                                                                php",
+                                                               options)
                     .unwrap()
                     .as_str())
                 .unwrap();
@@ -53,7 +55,10 @@ fn main() {
             let client = Client::with_connector(connector);
 
             let mut res: String = String::new();
-            let _ = client.get(url).send().unwrap().read_to_string(&mut res);
+            let _ = client.get(url)
+                .send()
+                .unwrap()
+                .read_to_string(&mut res);
             let value: Value = serde_json::from_str(res.as_str()).unwrap();
             println!("{}", value["query"]["pages"][0]["imageinfo"][0]["url"]);
         }

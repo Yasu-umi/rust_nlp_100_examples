@@ -36,14 +36,13 @@ pub fn feature_mappings(input: String) -> Vec<MecabFeatureMapping> {
                 let pos1 = feature.nth(0).map(|t| t.to_string()).unwrap_or("".to_string());
                 let base = feature.nth(4).map(|t| t.to_string()).unwrap_or("".to_string());
                 features.push(MecabFeatureMapping {
-                                  surface: surface,
-                                  base: base,
-                                  pos: pos,
-                                  pos1: pos1,
-                              });
+                    surface: surface,
+                    base: base,
+                    pos: pos,
+                    pos1: pos1,
+                });
             }
         }
     }
     features
 }
-
