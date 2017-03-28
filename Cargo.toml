@@ -11,6 +11,7 @@ flate2 = "*"
 serde_json = "*"
 regex = "*"
 mecab = "*"
+gnuplot = "*"
 
 [dependencies.url]
 git = "https://github.com/servo/rust-url"

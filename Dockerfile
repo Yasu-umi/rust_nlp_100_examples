@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get upgrade -qy && \
     apt-get install -y --no-install-recommends \
     curl openssl libssl-dev ca-certificates build-essential pkg-config \
-    mecab mecab-ipadic-utf8 libmecab-dev && \
+    mecab mecab-ipadic-utf8 libmecab-dev gnuplot5 && \
     apt-get clean && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
 
 RUN curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y && \
