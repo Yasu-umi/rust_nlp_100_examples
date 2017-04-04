@@ -4,6 +4,7 @@ extern crate mecab;
 use std;
 
 
+#[allow(dead_code)]
 pub struct MecabFeatureMapping {
     pub surface: String,
     pub base: String,
@@ -22,6 +23,7 @@ impl std::fmt::Display for MecabFeatureMapping {
     }
 }
 
+#[allow(dead_code)]
 pub fn feature_mappings(input: String) -> Vec<MecabFeatureMapping> {
     let mut tagger = mecab::Tagger::new("");
     let mut features: Vec<MecabFeatureMapping> = Vec::new();
