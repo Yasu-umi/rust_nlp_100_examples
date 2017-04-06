@@ -6,4 +6,4 @@ dependencies:
     - docker build -t rust_nlp_100_examples .
 test:
   override:
-    - docker run -it --name rust_nlp_100_examples rust_nlp_100_examples
+    - docker run -it --name rust_nlp_100_examples rust_nlp_100_examples cargo build

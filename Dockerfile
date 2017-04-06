@@ -17,7 +17,7 @@ RUN mkdir ~/tmp && cd ~/tmp && \
     git clone https://github.com/taku910/cabocha.git && cd cabocha && \
     LDFLAGS="-Wl,-rpath=/usr/local/lib -L/usr/local/lib" ./configure --with-charset=UTF8 --enable-utf8-only && \
     make && make install && \
-    rm -rf ~/tmp
+    ldconfig && rm -rf ~/tmp
 
 RUN curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y && \
     /bin/bash -c "source ~/.profile && \
@@ -30,5 +30,6 @@ ADD src src
 ADD Cargo.toml Cargo.toml
 ADD Cargo.lock Cargo.lock
 
-ENTRYPOINT ["/bin/bash"]
-CMD ["-c", "/root/.cargo/bin/cargo build"]
+ENV PATH $PATH:/root/.cargo/bin
+
+CMD ["/bin/bash"]
