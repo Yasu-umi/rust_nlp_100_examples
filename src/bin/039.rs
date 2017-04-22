@@ -1,17 +1,18 @@
 #!rust run
 
 extern crate gnuplot;
+extern crate nlp_100_examples;
 
 use std::env;
 
 use gnuplot::{Figure, AxesCommon, LineWidth, BorderColor};
 
-mod lib;
+use nlp_100_examples::*;
 
 
 fn draw_histograph(filepath: &str) {
-    let input = lib::fetch::text("http://www.cl.ecei.tohoku.ac.jp/nlp100/data/neko.txt");
-    let vec = lib::mecab_utils::get_words_sorted_by_freq(input);
+    let input = fetch::text("http://www.cl.ecei.tohoku.ac.jp/nlp100/data/neko.txt");
+    let vec = mecab_utils::get_words_sorted_by_freq(input);
 
     let x = 1..(vec.iter().len());
     let y = vec.iter().map(|&(_, n)| n);

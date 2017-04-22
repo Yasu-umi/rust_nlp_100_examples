@@ -1,18 +1,19 @@
 #!rust run
 
 extern crate gnuplot;
+extern crate nlp_100_examples;
 
 use std::env;
-
-use gnuplot::{Figure, AxesCommon, Color, LineWidth, BorderColor, Major, Fix, Font};
 use std::iter::repeat;
 
-mod lib;
+use gnuplot::{Figure, AxesCommon, Color, LineWidth, BorderColor, Major, Fix, Font};
+
+use nlp_100_examples::*;
 
 
 fn draw_top10_freq_bar_graph(filepath: &str) {
-    let input = lib::fetch::text("http://www.cl.ecei.tohoku.ac.jp/nlp100/data/neko.txt");
-    let mut sorted_tumple_vec = lib::mecab_utils::get_words_sorted_by_freq(input);
+    let input = fetch::text("http://www.cl.ecei.tohoku.ac.jp/nlp100/data/neko.txt");
+    let mut sorted_tumple_vec = mecab_utils::get_words_sorted_by_freq(input);
     sorted_tumple_vec.split_off(10);
 
     let x = 0..sorted_tumple_vec.len();

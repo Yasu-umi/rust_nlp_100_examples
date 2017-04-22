@@ -1,13 +1,15 @@
 #!rust run
 
+extern crate nlp_100_examples;
+
 use std::collections::HashMap;
 
-mod lib;
+use nlp_100_examples::*;
 
 
 fn main() {
-    let input = lib::fetch::text("http://www.cl.ecei.tohoku.ac.jp/nlp100/data/neko.txt");
-    let mappings = lib::mecab_utils::feature_mappings(input);
+    let input = fetch::text("http://www.cl.ecei.tohoku.ac.jp/nlp100/data/neko.txt");
+    let mappings = mecab_utils::feature_mappings(input);
 
     let mut counter: HashMap<String, u32> = HashMap::new();
     for mapping in mappings {

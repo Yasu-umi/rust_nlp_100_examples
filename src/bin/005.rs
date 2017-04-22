@@ -1,7 +1,10 @@
 #!rust run
 
+extern crate nlp_100_examples;
+
 use std::env;
-mod lib;
+
+use nlp_100_examples::*;
 
 fn main() {
     let args = env::args().collect::<Vec<String>>();
@@ -12,12 +15,12 @@ fn main() {
         (Some(sentence), Some(str_n), Some(unit)) => {
             match (&*unit.to_string(), str_n.parse::<i32>()) {
                 ("word", Ok(n)) => {
-                    for words in lib::n_gram::by_word(n, sentence) {
+                    for words in n_gram::by_word(n, sentence) {
                         println!("{}", words.join(" "));
                     }
                 }
                 ("str", Ok(n)) => {
-                    for n_str in lib::n_gram::by_str(n, sentence) {
+                    for n_str in n_gram::by_str(n, sentence) {
                         println!("{}", n_str);
                     }
                 }

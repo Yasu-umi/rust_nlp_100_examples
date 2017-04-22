@@ -5,6 +5,7 @@ extern crate hyper;
 extern crate hyper_native_tls;
 extern crate serde_json;
 extern crate url;
+extern crate nlp_100_examples;
 
 use regex::Regex;
 use std::io::Read;
@@ -14,7 +15,7 @@ use hyper_native_tls::NativeTlsClient;
 use serde_json::Value;
 use url::Url;
 
-mod lib;
+use nlp_100_examples::*;
 
 
 fn main() {
@@ -31,7 +32,7 @@ fn main() {
         tmp_t = (*re5.replace_all(tmp_t.as_str(), "")).to_string();
         tmp_t
     };
-    let hash = lib::fetch::get_template_hash(r"イギリス", formatter);
+    let hash = fetch::get_template_hash(r"イギリス", formatter);
     for (key, value) in &hash {
         if Regex::new("国旗画像").unwrap().is_match(key) {
             let titles = "Image:".to_string() + value;

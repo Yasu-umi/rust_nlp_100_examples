@@ -1,13 +1,15 @@
 #!rust run
 
-mod lib;
+extern crate nlp_100_examples;
+
+use nlp_100_examples::*;
 
 
 fn main() {
     fn formatter(t: String) -> String {
         t
     };
-    let hash = lib::fetch::get_template_hash("イギリス", formatter);
+    let hash = fetch::get_template_hash("イギリス", formatter);
     for (key, value) in &hash {
         println!("{}: {}", key, value);
     }

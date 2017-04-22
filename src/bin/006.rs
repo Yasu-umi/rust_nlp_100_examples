@@ -1,7 +1,9 @@
 #!rust run
 
+extern crate nlp_100_examples;
+
 use std::env;
-mod lib;
+use nlp_100_examples::*;
 
 pub struct UniDiffProdStringVecs {
     pub uni: Vec<String>,
@@ -10,8 +12,8 @@ pub struct UniDiffProdStringVecs {
 }
 
 fn uni_diff_prod_string_vecs(sentence_1: &str, sentence_2: &str) -> UniDiffProdStringVecs {
-    let bi_gramed_sentence_1 = lib::n_gram::by_str(2, sentence_1);
-    let bi_gramed_sentence_2 = lib::n_gram::by_str(2, sentence_2);
+    let bi_gramed_sentence_1 = n_gram::by_str(2, sentence_1);
+    let bi_gramed_sentence_2 = n_gram::by_str(2, sentence_2);
     let mut uni_vec = Vec::new();
     let mut diff_vec = Vec::new();
     let mut prod_vec = Vec::new();

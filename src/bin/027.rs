@@ -1,9 +1,11 @@
 #!rust run
 
 extern crate regex;
+extern crate nlp_100_examples;
+
 use self::regex::Regex;
 
-mod lib;
+use nlp_100_examples::*;
 
 
 fn main() {
@@ -13,7 +15,7 @@ fn main() {
         let tmp_t = (*re1.replace_all(t.as_str(), "")).to_string();
         (*re2.replace_all(tmp_t.as_str(), "$2")).to_string()
     };
-    let hash = lib::fetch::get_template_hash("イギリス", formatter);
+    let hash = fetch::get_template_hash("イギリス", formatter);
     for (key, value) in &hash {
         println!("{}: {}", key, value);
     }

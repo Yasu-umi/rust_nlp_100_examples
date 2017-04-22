@@ -1,18 +1,19 @@
 #!rust run
 
 extern crate gnuplot;
+extern crate nlp_100_examples;
 
 use std::env;
-
-use gnuplot::{Figure, AxesCommon, Color, LineWidth, BorderColor, Major, Fix};
 use std::iter::repeat;
 
-mod lib;
+use gnuplot::{Figure, AxesCommon, Color, LineWidth, BorderColor, Major, Fix};
+
+use nlp_100_examples::*;
 
 
 fn draw_histograph(filepath: &str) {
-    let input = lib::fetch::text("http://www.cl.ecei.tohoku.ac.jp/nlp100/data/neko.txt");
-    let vec = lib::mecab_utils::get_freq_words_vec(input);
+    let input = fetch::text("http://www.cl.ecei.tohoku.ac.jp/nlp100/data/neko.txt");
+    let vec = mecab_utils::get_freq_words_vec(input);
     let kinds_freq_vec = vec.iter()
         .map(|&(n, ref words)| (n, words.len()))
         .collect::<Vec<(u32, usize)>>();
