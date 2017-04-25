@@ -10,6 +10,6 @@ fn main() {
     let mappings = mecab_utils::feature_mappings(input);
 
     for mapping in mappings {
-        println!("{}", mapping);
+        println!("{:?}", mapping);
     }
 }
