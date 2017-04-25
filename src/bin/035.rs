@@ -9,7 +9,7 @@ fn main() {
     let mappings = mecab_utils::feature_mappings(input);
 
     let mut nouns: Vec<String> = Vec::new();
-    let mut noun_mappings: Vec<mecab_utils::MecabFeatureMapping> = Vec::new();
+    let mut noun_mappings: Vec<structs::Morph> = Vec::new();
     for mapping in mappings {
         if mapping.pos == "名詞" {
             noun_mappings.push(mapping);

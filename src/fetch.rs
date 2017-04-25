@@ -1,5 +1,3 @@
-#!rust run
-
 extern crate hyper;
 extern crate flate2;
 extern crate serde_json;
