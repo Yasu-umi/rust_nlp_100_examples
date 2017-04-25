@@ -1,25 +1,13 @@
 extern crate mecab;
 extern crate cabocha;
 
-use std;
-
 #[derive(Debug)]
 pub struct Morph {
     pub surface: String,
     pub base: String,
     pub pos: String,
     pub pos1: String,
-}
-
-impl std::fmt::Display for Morph {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f,
-               "(surface: {}, base: {}, pos: {}, pos1: {})",
-               self.surface,
-               self.base,
-               self.pos,
-               self.pos1)
-    }
+    pub feature: Vec<String>,
 }
 
 impl Morph {
@@ -30,6 +18,7 @@ impl Morph {
             pos: feature.nth(0).map(|t| t.to_string()).unwrap_or("".to_string()),
             pos1: feature.nth(0).map(|t| t.to_string()).unwrap_or("".to_string()),
             base: feature.nth(4).map(|t| t.to_string()).unwrap_or("".to_string()),
+            feature: node.feature.split(",").map(|t| t.to_string()).collect(),
         }
     }
 
@@ -40,6 +29,7 @@ impl Morph {
             pos: feature_iter.nth(0).map(|t| t.to_string()).unwrap_or("".to_string()),
             pos1: feature_iter.nth(0).map(|t| t.to_string()).unwrap_or("".to_string()),
             base: feature_iter.nth(4).map(|t| t.to_string()).unwrap_or("".to_string()),
+            feature: token.feature.split(",").map(|t| t.to_string()).collect(),
         }
     }
 
