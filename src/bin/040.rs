@@ -1,6 +1,5 @@
 #!rust run
 
-extern crate cabocha;
 extern crate nlp_100_examples;
 
 use nlp_100_examples::*;
