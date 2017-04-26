@@ -1,7 +1,7 @@
 extern crate mecab;
 extern crate cabocha;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Morph {
     pub surface: String,
     pub base: String,
@@ -58,26 +58,31 @@ impl Morph {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Chunk {
     pub morphs: Vec<Morph>,
-    pub dst: usize,
+    pub dst: Option<usize>,
     pub srcs: Vec<usize>,
-    pos: usize,
+    pub orig_pos: usize,
+    pub orig_dst: Option<usize>,
 }
 
 impl Chunk {
-    pub fn from_cabocha_chunk(chunk: &cabocha::Chunk, tree: &cabocha::Tree, pos: &usize) -> Chunk {
+    fn from_cabocha_chunk(chunk: &cabocha::Chunk, tree: &cabocha::Tree, pos: &usize) -> Chunk {
         let token_range = chunk.token_pos..(chunk.token_pos + chunk.token_size);
-        let morphs: Vec<Morph> = token_range
-            .into_iter()
+        let morphs: Vec<Morph> = token_range.into_iter()
             .map(|i| Morph::from_cabocha_token(tree.token(i).unwrap()))
             .collect();
         Chunk {
             morphs: morphs,
-            dst: chunk.link as usize,
+            dst: None,
             srcs: Vec::new(),
-            pos: *pos,
+            orig_pos: *pos,
+            orig_dst: if chunk.link < 0 {
+                None
+            } else {
+                Some(chunk.link as usize)
+            },
         }
     }
 
@@ -88,27 +93,33 @@ impl Chunk {
 
         let mut chunked_sentences = Vec::new();
         let mut chunked_sentence = Vec::new();
+        let mut first_pos = 0;
 
         for i in 0..chunk_size {
             let cabocha_chunk = tree.chunk(i).unwrap();
             let chunk = Chunk::from_cabocha_chunk(&cabocha_chunk, &tree, &i);
             let is_end_of_sentence = chunk.is_end_of_sentence();
             chunked_sentence.push(chunk);
+
             if is_end_of_sentence {
-                let mut tmp_chunked_sentence = Vec::new();
                 let len = chunked_sentence.len();
-                let dsts: Vec<usize> = chunked_sentence
-                    .iter()
-                    .map(|chunk| chunk.dst)
+
+                // set dst (dst is chunk pos in sentence)
+                chunked_sentence = chunked_sentence.into_iter()
+                    .map(|chunk| chunk.set_dst(first_pos, len))
                     .collect();
-                for mut chunk in chunked_sentence.into_iter() {
-                    chunk.srcs = (0..len)
-                        .filter(|i| *dsts.get(*i).unwrap() == chunk.pos)
-                        .collect();
-                    tmp_chunked_sentence.push(chunk);
-                }
-                chunked_sentences.push(tmp_chunked_sentence);
+
+                // set srcs
+                let orig_dsts: Vec<Option<usize>> = chunked_sentence.iter()
+                    .map(|chunk| chunk.orig_dst)
+                    .collect();
+                chunked_sentence = chunked_sentence.into_iter()
+                    .map(|chunk| chunk.set_srcs(&orig_dsts, len))
+                    .collect();
+
+                chunked_sentences.push(chunked_sentence);
                 chunked_sentence = Vec::new();
+                first_pos = i + 1;
             }
         }
         chunked_sentences
@@ -116,5 +127,35 @@ impl Chunk {
 
     pub fn is_end_of_sentence(&self) -> bool {
         self.morphs.iter().any(|morph| morph.is_end_of_sentence())
+    }
+
+    pub fn surfaces(&self) -> String {
+        self.morphs
+            .iter()
+            .map(|morph| morph.surface.clone())
+            .collect::<Vec<String>>()
+            .join("")
+    }
+
+    pub fn set_dst(mut self, first_pos: usize, sentence_len: usize) -> Chunk {
+        self.dst = self.orig_dst
+            .and_then(|orig_dst| if first_pos < orig_dst && orig_dst - first_pos < sentence_len {
+                Some(orig_dst - first_pos)
+            } else {
+                None
+            });
+        self
+    }
+
+    pub fn set_srcs(mut self, orig_dsts: &Vec<Option<usize>>, sentence_len: usize) -> Chunk {
+        self.srcs = (0..sentence_len)
+            .filter(|i| {
+                orig_dsts.get(*i)
+                    .unwrap_or(&None)
+                    .map(|orig_dst| orig_dst == self.orig_pos)
+                    .unwrap_or(false)
+            })
+            .collect();
+        self
     }
 }
