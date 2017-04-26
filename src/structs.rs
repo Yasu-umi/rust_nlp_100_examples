@@ -158,4 +158,16 @@ impl Chunk {
             .collect();
         self
     }
+
+    pub fn has_noun(&self) -> bool {
+        self.morphs
+            .iter()
+            .any(|morph| morph.pos == "名詞")
+    }
+
+    pub fn has_verb(&self) -> bool {
+        self.morphs
+            .iter()
+            .any(|morph| morph.pos == "動詞")
+    }
 }
