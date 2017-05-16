@@ -132,9 +132,7 @@ impl Chunk {
     pub fn surfaces(&self) -> String {
         self.morphs
             .iter()
-            .map(|morph| morph.surface.clone())
-            .collect::<Vec<String>>()
-            .join("")
+            .fold(String::new(), |acc, morph| { acc + morph.surface.as_str() })
     }
 
     pub fn set_dst(mut self, first_pos: usize, sentence_len: usize) -> Chunk {

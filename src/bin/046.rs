@@ -16,17 +16,14 @@ fn main() {
         if chunk.has_verb() {
           let tmp_chunk = chunk.clone();
           let verb = tmp_chunk.morphs.get(0);
-          let particles = chunk.srcs.clone().into_iter()
-            .filter_map(|idx| tmp_chunked_sentence.get(idx))
-            .flat_map(structs::Chunk::morphs_of_particle)
-            .fold(String::new(), |acc, morph| { acc + "\t" + morph.base.clone().as_str() });
-          let morphs = chunk.srcs.clone().into_iter()
-            .map(|idx| tmp_chunked_sentence.get(idx))
-            .map(|opt_chunk| opt_chunk
-              .map(|chunk| chunk.morphs.iter().fold(String::new(), |acc, morph| { acc + morph.surface.as_str() }))
-            )
-            .fold(String::new(), |acc, surfaces| { acc + "\t" + surfaces.unwrap_or(String::new()).as_str() });
           if verb.is_some() {
+            let particles = chunk.srcs.clone().into_iter()
+              .filter_map(|idx| tmp_chunked_sentence.get(idx))
+              .flat_map(structs::Chunk::morphs_of_particle)
+              .fold(String::new(), |acc, morph| { acc + "\t" + morph.base.as_str() });
+            let morphs = chunk.srcs.clone().into_iter()
+              .map(|idx| tmp_chunked_sentence.get(idx).map(|chunk| chunk.surfaces()))
+              .fold(String::new(), |acc, surfaces| { acc + "\t" + surfaces.unwrap_or(String::new()).as_str() });
             println!("{}{}{}", verb.unwrap().base, particles, morphs);
           }
         }

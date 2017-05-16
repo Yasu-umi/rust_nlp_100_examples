@@ -16,13 +16,12 @@ fn main() {
         if chunk.has_verb() {
           let tmp_chunk = chunk.clone();
           let verb = tmp_chunk.morphs.get(0);
-          let srcs = chunk.srcs;
-          let particles = srcs.into_iter()
-            .filter_map(|idx| tmp_chunked_sentence.get(idx))
-            .flat_map(structs::Chunk::morphs_of_particle)
-            .map(|morph| morph.base.clone())
-            .fold(String::new(), |acc, new| { acc + "\t" + new.as_str() });
           if verb.is_some() {
+            let srcs = chunk.srcs;
+            let particles = srcs.into_iter()
+              .filter_map(|idx| tmp_chunked_sentence.get(idx))
+              .flat_map(structs::Chunk::morphs_of_particle)
+              .fold(String::new(), |acc, morph| { acc + "\t" + morph.base.as_str() });
             println!("{}{}", verb.unwrap().base, particles);
           }
         }
