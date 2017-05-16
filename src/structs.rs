@@ -101,7 +101,7 @@ impl Chunk {
             let is_end_of_sentence = chunk.is_end_of_sentence();
             chunked_sentence.push(chunk);
 
-            if is_end_of_sentence {
+            if is_end_of_sentence || i == (chunk_size - 1) {
                 let len = chunked_sentence.len();
 
                 // set dst (dst is chunk pos in sentence)
