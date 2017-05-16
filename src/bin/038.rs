@@ -29,7 +29,10 @@ fn draw_histograph(filepath: &str) {
     fg.axes2d()
         .set_x_label("Num", &[])
         .set_y_label("Kinds", &[])
-        .boxes_set_width(x, y, w, &[LineWidth(1.0), Color("gray"), BorderColor("black")])
+        .boxes_set_width(x,
+                         y,
+                         w,
+                         &[LineWidth(1.0), Color("gray"), BorderColor("black")])
         .set_x_ticks_custom(labels, &[], &[]);
     fg.set_terminal("encoding", "utf8");
     fg.set_terminal("png", filepath);
