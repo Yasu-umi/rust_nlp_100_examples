@@ -21,8 +21,11 @@ fn main() {
                     let particles = srcs.into_iter()
                         .filter_map(|idx| tmp_chunked_sentence.get(idx))
                         .flat_map(structs::Chunk::morphs_of_particle)
-                        .fold(String::new(), |acc, morph| acc + "\t" + morph.base.as_str());
-                    println!("{}{}", verb.unwrap().base, particles);
+                        .fold(String::new(), |acc, morph| {
+                            let next = morph.base.clone();
+                            if acc.len() > 0 { acc + " " + next.as_str() } else { next }
+                        });
+                    println!("{}\t{}", verb.unwrap().base, particles);
                 }
             }
         }
