@@ -158,24 +158,30 @@ impl Chunk {
     }
 
     pub fn morphs_of_particle(&self) -> Vec<&Morph> {
-        self.morphs_of_pos("助詞".to_string())
+        self.morphs_of_pos("助詞")
     }
 
-    pub fn morphs_of_pos(&self, pos: String) -> Vec<&Morph> {
+    pub fn morphs_of_pos(&self, pos: &str) -> Vec<&Morph> {
         self.morphs.iter().filter(|morph| morph.pos == pos).collect()
     }
 
     pub fn has_noun(&self) -> bool {
-        self.include_pos("名詞".to_string())
+        self.include_pos("名詞")
     }
 
     pub fn has_verb(&self) -> bool {
-        self.include_pos("動詞".to_string())
+        self.include_pos("動詞")
     }
 
-    pub fn include_pos(&self, pos: String) -> bool {
+    pub fn include_pos(&self, pos: &str) -> bool {
         self.morphs
             .iter()
             .any(|morph| morph.pos == pos)
+    }
+
+    pub fn include_pos1(&self, pos1: &str) -> bool {
+        self.morphs
+            .iter()
+            .any(|morph| morph.pos1 == pos1)
     }
 }
