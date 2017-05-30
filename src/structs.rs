@@ -184,4 +184,17 @@ impl Chunk {
             .iter()
             .any(|morph| morph.pos1 == pos1)
     }
+
+    pub fn to_root<'a>(&'a self, chunked_sentence: Vec<&'a Chunk>) ->  Vec<&'a Chunk> {
+        let mut path_vec = Vec::new();
+        let mut chunk = self;
+        path_vec.push(self);
+        while let Some(dst) = chunk.dst {
+            if let Some(dst_chunk) = chunked_sentence.get(dst) {
+                path_vec.push(dst_chunk);
+                chunk = dst_chunk;
+            }
+        }
+        path_vec
+    }
 }

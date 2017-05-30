@@ -14,20 +14,15 @@ fn main() {
         let len = chunked_sentence.len();
         for i in 0..len {
             if i == len - 1 { continue; }
-            let mut path_vec = Vec::new();
-            if let Some(mut chunk) = chunked_sentence.get(i) {
-                path_vec.push(chunk.surfaces());
-                while let Some(dst) = chunk.dst {
-                    if let Some(dst_chunk) = chunked_sentence.get(dst) {
-                        path_vec.push(dst_chunk.surfaces());
-                        chunk = dst_chunk;
-                    }
-                }
+            if let Some(chunk) = chunked_sentence.get(i) {
+                let path_vec = chunk.to_root(chunked_sentence.iter().collect());
+                let path = path_vec.iter()
+                    .map(|chunk| chunk.surfaces())
+                    .fold(String::new(), (|acc, item| {
+                        if acc.len() == 0 { item } else { acc + " -> " + item.as_str() }
+                    }));
+                println!("{}", path);
             }
-            let path = path_vec.iter().fold(String::new(), (|acc, item| {
-                if acc.len() == 0 { item.to_string() } else { acc + " -> " + item }
-            }));
-            println!("{}", path);
         }
     }
 }
