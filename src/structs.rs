@@ -73,16 +73,13 @@ impl Chunk {
         let morphs: Vec<Morph> = token_range.into_iter()
             .map(|i| Morph::from_cabocha_token(tree.token(i).unwrap()))
             .collect();
+        let dst = if chunk.link < 0 { None } else { Some(chunk.link as usize) };
         Chunk {
             morphs: morphs,
             dst: None,
             srcs: Vec::new(),
             orig_pos: *pos,
-            orig_dst: if chunk.link < 0 {
-                None
-            } else {
-                Some(chunk.link as usize)
-            },
+            orig_dst: dst,
         }
     }
 
@@ -132,27 +129,29 @@ impl Chunk {
     pub fn surfaces(&self) -> String {
         self.morphs
             .iter()
-            .fold(String::new(), |acc, morph| { acc + morph.surface.as_str() })
+            .fold(String::new(), |acc, morph| acc + morph.surface.as_str())
     }
 
     pub fn set_dst(mut self, first_pos: usize, sentence_len: usize) -> Chunk {
         self.dst = self.orig_dst
-            .and_then(|orig_dst| if first_pos < orig_dst && orig_dst - first_pos < sentence_len {
-                Some(orig_dst - first_pos)
-            } else {
-                None
-            });
+            .and_then(|orig_dst|
+                if first_pos < orig_dst && orig_dst - first_pos < sentence_len {
+                    Some(orig_dst - first_pos)
+                } else {
+                    None
+                }
+            );
         self
     }
 
     pub fn set_srcs(mut self, orig_dsts: &Vec<Option<usize>>, sentence_len: usize) -> Chunk {
         self.srcs = (0..sentence_len)
-            .filter(|i| {
+            .filter(|i|
                 orig_dsts.get(*i)
                     .unwrap_or(&None)
                     .map(|orig_dst| orig_dst == self.orig_pos)
                     .unwrap_or(false)
-            })
+            )
             .collect();
         self
     }
@@ -196,5 +195,37 @@ impl Chunk {
             }
         }
         path_vec
+    }
+
+    pub fn replace_noun(&self, text: &str) -> Chunk {
+        let morphs = self.morphs.clone()
+            .into_iter()
+            .map(|morph|
+                if morph.pos == "名詞" {
+                    Morph {
+                        surface: text.to_string(),
+                        pos: morph.pos,
+                        pos1: morph.pos1,
+                        base: text.to_string(),
+                        feature: morph.feature,
+                    }
+                } else {
+                    morph.clone()
+                }
+            )
+            .collect();
+        Chunk {
+            morphs: morphs,
+            dst: self.dst,
+            srcs: self.srcs.clone(),
+            orig_pos: self.orig_pos,
+            orig_dst: self.orig_dst,
+        }
+    }
+}
+
+impl PartialEq for Chunk {
+    fn eq(&self, other: &Chunk) -> bool {
+        self.orig_pos == other.orig_pos
     }
 }
