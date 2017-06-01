@@ -11,7 +11,7 @@ RUN apt-get update && apt-get upgrade -qy && \
     apt-get install -y --no-install-recommends \
     curl git openssl libssl-dev ca-certificates \
     build-essential pkg-config autoconf libtool gettext \
-    mecab mecab-ipadic-utf8 libmecab-dev gnuplot5 fonts-ipafont-gothic && \
+    mecab mecab-ipadic-utf8 libmecab-dev gnuplot5 fonts-ipafont-gothic graphviz && \
     apt-get clean && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/* && \
 
     mkdir ~/tmp && \
