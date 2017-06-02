@@ -4,7 +4,7 @@ use std::collections::HashMap;
 
 use structs::*;
 
-#[allow(dead_code)]
+
 pub fn feature_mappings(input: String) -> Vec<Morph> {
     let mut tagger = mecab::Tagger::new("");
     let mut features: Vec<Morph> = Vec::new();
@@ -18,7 +18,6 @@ pub fn feature_mappings(input: String) -> Vec<Morph> {
     features
 }
 
-#[allow(dead_code)]
 pub fn get_words_sorted_by_freq(input: String) -> Vec<(String, u32)> {
     let mappings = feature_mappings(input);
     let mut counter: HashMap<String, u32> = HashMap::new();
@@ -33,7 +32,6 @@ pub fn get_words_sorted_by_freq(input: String) -> Vec<(String, u32)> {
     sorted_tumple_vec
 }
 
-#[allow(dead_code)]
 pub fn get_freq_words_vec(input: String) -> Vec<(u32, Vec<String>)> {
     let sorted_tumple_vec = get_words_sorted_by_freq(input);
     let mut map: HashMap<u32, Vec<String>> = HashMap::new();

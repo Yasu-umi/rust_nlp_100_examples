@@ -1,4 +1,3 @@
-#[allow(dead_code)]
 pub fn by_word(n: i32, sentence: &str) -> Vec<Vec<String>> {
     let words = sentence.split(' ')
         .map(|word| word.to_string().to_owned())
@@ -21,7 +20,6 @@ pub fn by_word(n: i32, sentence: &str) -> Vec<Vec<String>> {
     res
 }
 
-#[allow(dead_code)]
 pub fn by_str(n: i32, sentence: &str) -> Vec<String> {
     let strs = sentence.replace(" ", "").to_string();
     let len = strs.len();

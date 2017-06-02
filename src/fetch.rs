@@ -18,7 +18,6 @@ use self::regex::Regex;
 use artist::Artist;
 
 
-#[allow(dead_code)]
 pub fn text(url: &str) -> String {
     let client = Client::new();
     let req = client.get(url);
@@ -28,7 +27,6 @@ pub fn text(url: &str) -> String {
     buf
 }
 
-#[allow(dead_code)]
 pub fn gz_text(url: &str) -> String {
     let client = Client::new();
 
@@ -45,13 +43,11 @@ pub fn gz_text(url: &str) -> String {
     buf
 }
 
-#[allow(dead_code)]
 pub fn gz_json_by_line(url: &str) -> Vec<Value> { 
     let res = gz_text(url);
     res.as_str().trim().split('\n').flat_map(serde_json::from_str).collect()
 }
 
-#[allow(dead_code)]
 pub fn gz_artists_by_line(url: &str) -> Vec<Artist> { 
     let res = gz_text(url);
     let lines = res.lines().collect::<Vec<&str>>();
@@ -64,7 +60,6 @@ pub fn gz_artists_by_line(url: &str) -> Vec<Artist> {
     vec
 }
 
-#[allow(dead_code)]
 pub fn country_texts(country_re: &str) -> Vec<String> {
     let url = "http://www.cl.ecei.tohoku.ac.jp/nlp100/data/jawiki-country.json.gz";
     let buf = gz_json_by_line(url);
@@ -82,7 +77,6 @@ pub fn country_texts(country_re: &str) -> Vec<String> {
     texts
 }
 
-#[allow(dead_code)]
 pub fn get_template_hash<F: Fn(String) -> String>(country: &str,
                                                   formatter: F)
                                                   -> HashMap<String, String> {
