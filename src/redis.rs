@@ -1,7 +1,7 @@
 extern crate redis;
 
 use redis::redis::Commands;
-use fetch;
+use artist::Artist;
 
 pub fn create_connect(url: &str) -> Result<redis::Connection, redis::RedisError> {
   let client = try!(redis::Client::open(url));
@@ -9,9 +9,7 @@ pub fn create_connect(url: &str) -> Result<redis::Connection, redis::RedisError>
   Ok(connect)
 }
 
-pub fn set_artists(url: &str) -> Result<(), redis::RedisError> {
-    let connect = try!(create_connect(url));
-    let artists = fetch::gz_artists_by_line("http://www.cl.ecei.tohoku.ac.jp/nlp100/data/artist.json.gz");
+pub fn set_artists(connect: &redis::Connection, artists: Vec<Artist>) -> Result<(), redis::RedisError> {
     for artist in artists {
         if let Some(area) = artist.area {
             let _: () = try!(connect.set(artist.name, area));
