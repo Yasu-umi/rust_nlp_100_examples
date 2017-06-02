@@ -17,3 +17,8 @@ pub fn set_artists(connect: &redis::Connection, artists: Vec<Artist>) -> Result<
     }
     Ok(())
 }
+
+pub fn get_area_by_name(connect: &redis::Connection, name: &str) -> Result<String, redis::RedisError> {
+    let res: String = try!(connect.get(name));
+    Ok(res)
+}
