@@ -11,7 +11,9 @@ RUN apt-get update && apt-get upgrade -qy && \
     apt-get install -y --no-install-recommends \
     curl git openssl libssl-dev ca-certificates \
     build-essential pkg-config autoconf libtool gettext \
-    mecab mecab-ipadic-utf8 libmecab-dev gnuplot5 fonts-ipafont-gothic graphviz && \
+    mecab mecab-ipadic-utf8 libmecab-dev \
+    gnuplot5 fonts-ipafont-gothic graphviz \
+    redis-server && \
     apt-get clean && rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/* && \
 
     mkdir ~/tmp && \
@@ -32,5 +34,7 @@ RUN apt-get update && apt-get upgrade -qy && \
 ADD src src
 ADD Cargo.toml Cargo.toml
 ADD Cargo.lock Cargo.lock
+
+EXPOSE 6379
 
 CMD ["/bin/bash"]

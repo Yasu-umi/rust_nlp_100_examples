@@ -15,6 +15,8 @@ use self::serde_json::Value;
 
 use self::regex::Regex;
 
+use artist::Artist;
+
 
 #[allow(dead_code)]
 pub fn text(url: &str) -> String {
@@ -44,14 +46,22 @@ pub fn gz_text(url: &str) -> String {
 }
 
 #[allow(dead_code)]
-pub fn gz_json_by_line(url: &str) -> Vec<Value> {
+pub fn gz_json_by_line(url: &str) -> Vec<Value> { 
     let res = gz_text(url);
-    let lines: Vec<&str> = res.as_str().trim().split('\n').collect();
-    let mut value: Vec<Value> = Vec::new();
+    res.as_str().trim().split('\n').flat_map(serde_json::from_str).collect()
+}
+
+#[allow(dead_code)]
+pub fn gz_artists_by_line(url: &str) -> Vec<Artist> { 
+    let res = gz_text(url);
+    let lines = res.lines().collect::<Vec<&str>>();
+    let mut vec: Vec<Artist> = Vec::with_capacity(lines.len());
     for line in lines {
-        value.push(serde_json::from_str(line).unwrap());
+        if let Ok(artist) = serde_json::from_str(line) {
+            vec.push(artist);
+        }
     }
-    value
+    vec
 }
 
 #[allow(dead_code)]
