@@ -15,8 +15,11 @@ fn main() {
         let tmp_t = (*re1.replace_all(t.as_str(), "")).to_string();
         (*re2.replace_all(tmp_t.as_str(), "$2")).to_string()
     };
-    let hash = fetch::get_template_hash("イギリス", formatter);
-    for (key, value) in &hash {
-        println!("{}: {}", key, value);
+    if let Ok(config) = config::Config::new() {
+        if let Ok(hash) = fetch::get_template_hash(config.country_json_url.as_str(), "イギリス", formatter) {
+            for (key, value) in hash {
+                println!("{}: {}", key, value);
+            }
+        }
     }
 }

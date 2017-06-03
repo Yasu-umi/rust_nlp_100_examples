@@ -6,8 +6,11 @@ use nlp_100_examples::*;
 
 
 fn main() {
-    let texts = fetch::country_texts("イギリス");
-    for text in texts {
-        println!("{:?}", text);
+    if let Ok(config) = config::Config::new() {
+        if let Ok(texts) = fetch::country_texts(config.country_json_url.as_str(), "イギリス") {
+            for text in texts {
+                println!("{}", text);
+            }
+        }
     }
 }

@@ -9,10 +9,13 @@ use nlp_100_examples::*;
 
 fn main() {
     let re = Regex::new(".*Category.*").unwrap();
-    let texts = fetch::country_texts("イギリス");
-    let lines =
-        texts.iter().flat_map(|t| t.lines()).filter(|l| re.is_match(l)).collect::<Vec<&str>>();
-    for line in lines {
-        println!("{:?}", line);
+    if let Ok(config) = config::Config::new() {
+        if let Ok(texts) = fetch::country_texts(config.country_json_url.as_str(), "イギリス") {
+            let lines = texts
+                .filter(|l| re.is_match(l));
+            for line in lines {
+                println!("{}", line);
+            }
+        }
     }
 }

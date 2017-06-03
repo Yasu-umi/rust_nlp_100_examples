@@ -32,36 +32,39 @@ fn main() {
         tmp_t = (*re5.replace_all(tmp_t.as_str(), "")).to_string();
         tmp_t
     };
-    let hash = fetch::get_template_hash(r"イギリス", formatter);
-    for (key, value) in &hash {
-        if Regex::new("国旗画像").unwrap().is_match(key) {
-            let titles = "Image:".to_string() + value;
-            let options = &[("action", "query"),
-                            ("prop", "imageinfo"),
-                            ("iiprop", "url"),
-                            ("format", "json"),
-                            ("formatversion", "2"),
-                            ("utf8", ""),
-                            ("continue", ""),
-                            ("titles", titles.as_str())];
-            let url = hyper::Url::parse(Url::parse_with_params("https://ja.wikipedia.org/w/api.\
-                                                                php",
-                                                               options)
-                    .unwrap()
-                    .as_str())
-                .unwrap();
+    if let Ok(config) = config::Config::new() {
+        if let Ok(hash) = fetch::get_template_hash(config.country_json_url.as_str(), "イギリス", formatter) {
+            for (key, value) in hash {
+                if Regex::new("国旗画像").unwrap().is_match(key.as_str()) {
+                    let titles = "Image:".to_string() + value.as_str();
+                    let options = &[("action", "query"),
+                                    ("prop", "imageinfo"),
+                                    ("iiprop", "url"),
+                                    ("format", "json"),
+                                    ("formatversion", "2"),
+                                    ("utf8", ""),
+                                    ("continue", ""),
+                                    ("titles", titles.as_str())];
+                    let url = hyper::Url::parse(Url::parse_with_params("https://ja.wikipedia.org/w/api.\
+                                                                        php",
+                                                                    options)
+                            .unwrap()
+                            .as_str())
+                        .unwrap();
 
-            let tls = NativeTlsClient::new().unwrap();
-            let connector = HttpsConnector::new(tls);
-            let client = Client::with_connector(connector);
+                    let tls = NativeTlsClient::new().unwrap();
+                    let connector = HttpsConnector::new(tls);
+                    let client = Client::with_connector(connector);
 
-            let mut res: String = String::new();
-            let _ = client.get(url)
-                .send()
-                .unwrap()
-                .read_to_string(&mut res);
-            let value: Value = serde_json::from_str(res.as_str()).unwrap();
-            println!("{}", value["query"]["pages"][0]["imageinfo"][0]["url"]);
+                    let mut res: String = String::new();
+                    let _ = client.get(url)
+                        .send()
+                        .unwrap()
+                        .read_to_string(&mut res);
+                    let value: Value = serde_json::from_str(res.as_str()).unwrap();
+                    println!("{}", value["query"]["pages"][0]["imageinfo"][0]["url"]);
+                }
+            }
         }
     }
 }
