@@ -83,45 +83,6 @@ impl Chunk {
         }
     }
 
-    pub fn from_sentences(text: String) -> Vec<Vec<Chunk>> {
-        let mut parser = cabocha::Parser::new("");
-        let tree = parser.parse_to_tree(text);
-        let chunk_size = tree.chunk_size();
-
-        let mut chunked_sentences = Vec::new();
-        let mut chunked_sentence = Vec::new();
-        let mut first_pos = 0;
-
-        for i in 0..chunk_size {
-            let cabocha_chunk = tree.chunk(i).unwrap();
-            let chunk = Chunk::from_cabocha_chunk(&cabocha_chunk, &tree, &i);
-            let is_end_of_sentence = chunk.is_end_of_sentence();
-            chunked_sentence.push(chunk);
-
-            if is_end_of_sentence || i == (chunk_size - 1) {
-                let len = chunked_sentence.len();
-
-                // set dst (dst is chunk pos in sentence)
-                chunked_sentence = chunked_sentence.into_iter()
-                    .map(|chunk| chunk.set_dst(first_pos, len))
-                    .collect();
-
-                // set srcs
-                let orig_dsts: Vec<Option<usize>> = chunked_sentence.iter()
-                    .map(|chunk| chunk.orig_dst)
-                    .collect();
-                chunked_sentence = chunked_sentence.into_iter()
-                    .map(|chunk| chunk.set_srcs(&orig_dsts, len))
-                    .collect();
-
-                chunked_sentences.push(chunked_sentence);
-                chunked_sentence = Vec::new();
-                first_pos = i + 1;
-            }
-        }
-        chunked_sentences
-    }
-
     pub fn is_end_of_sentence(&self) -> bool {
         self.morphs.iter().any(|morph| morph.is_end_of_sentence())
     }
@@ -132,11 +93,11 @@ impl Chunk {
             .fold(String::new(), |acc, morph| acc + morph.surface.as_str())
     }
 
-    pub fn set_dst(mut self, first_pos: usize, sentence_len: usize) -> Chunk {
+    pub fn set_dst(mut self, sentence_pos: usize, sentence_len: usize) -> Chunk {
         self.dst = self.orig_dst
             .and_then(|orig_dst|
-                if first_pos < orig_dst && orig_dst - first_pos < sentence_len {
-                    Some(orig_dst - first_pos)
+                if sentence_pos < orig_dst && orig_dst - sentence_pos < sentence_len {
+                    Some(orig_dst - sentence_pos)
                 } else {
                     None
                 }
@@ -148,8 +109,9 @@ impl Chunk {
         self.srcs = (0..sentence_len)
             .filter(|i|
                 orig_dsts.get(*i)
-                    .unwrap_or(&None)
-                    .map(|orig_dst| orig_dst == self.orig_pos)
+                    .and_then(|orig_dst_opt| {
+                        orig_dst_opt.map(|orig_dst| orig_dst == self.orig_pos)
+                    })
                     .unwrap_or(false)
             )
             .collect();
@@ -184,17 +146,8 @@ impl Chunk {
             .any(|morph| morph.pos1 == pos1)
     }
 
-    pub fn to_root<'a>(&'a self, chunked_sentence: Vec<&'a Chunk>) ->  Vec<&'a Chunk> {
-        let mut path_vec = Vec::new();
-        let mut chunk = self;
-        path_vec.push(self);
-        while let Some(dst) = chunk.dst {
-            if let Some(dst_chunk) = chunked_sentence.get(dst) {
-                path_vec.push(dst_chunk);
-                chunk = dst_chunk;
-            }
-        }
-        path_vec
+    pub fn to_root_iter<'a>(&'a self, chunked_sentence: &'a Vec<Chunk>) -> ToRootChunkIter<'a> { 
+        ToRootChunkIter::new(self, chunked_sentence)
     }
 
     pub fn replace_noun(&self, text: &str) -> Chunk {
@@ -227,5 +180,113 @@ impl Chunk {
 impl PartialEq for Chunk {
     fn eq(&self, other: &Chunk) -> bool {
         self.orig_pos == other.orig_pos
+    }
+}
+
+pub struct ChunkedSentenceIter {
+    tree: cabocha::Tree,
+    chunk_size: usize,
+    current_pos: usize,
+    sentence_pos: usize,
+}
+impl Iterator for ChunkedSentenceIter {
+    type Item = Vec<Chunk>;
+
+    fn next(&mut self) -> Option<Vec<Chunk>> {
+        let mut chunked_sentence = Vec::new();
+
+        if self.current_pos >= self.chunk_size { return None; }
+
+        for i in self.current_pos..self.chunk_size {
+            self.current_pos += 1;
+            if let Some(cabocha_chunk) = self.tree.chunk(i) {
+                let chunk = Chunk::from_cabocha_chunk(&cabocha_chunk, &self.tree, &i);
+                let is_end_of_sentence = chunk.is_end_of_sentence() || self.current_pos == self.chunk_size;
+                chunked_sentence.push(chunk);
+
+                if is_end_of_sentence {
+                    let len = chunked_sentence.len();
+                    let orig_dsts: Vec<Option<usize>> = chunked_sentence.iter()
+                        .map(|chunk| chunk.orig_dst)
+                        .collect();
+
+                    chunked_sentence = chunked_sentence.into_iter()
+                        .map(|chunk| chunk.set_dst(self.sentence_pos, len))
+                        .map(|chunk| chunk.set_srcs(&orig_dsts, len))
+                        .collect();
+
+                    self.sentence_pos = i + 1;
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+        Some(chunked_sentence)
+    }
+}
+
+impl<'a> ChunkedSentenceIter {
+    pub fn new(tree: cabocha::Tree) -> ChunkedSentenceIter {
+        let chunk_size = tree.chunk_size();
+        ChunkedSentenceIter {
+            tree: tree,
+            chunk_size: chunk_size,
+            current_pos: 0,
+            sentence_pos: 0,
+        }
+    }
+
+    pub fn from_sentences(text: String) -> impl Iterator<Item=Vec<Chunk>> + 'a {
+        ChunkedSentenceIter::new(cabocha::Parser::new("").parse_to_tree(text))
+    }
+}
+
+
+pub struct ToRootChunkIter<'a> {
+    first: bool,
+    org_chunk: &'a Chunk,
+    chunk: &'a Chunk,
+    chunked_sentence: &'a Vec<Chunk>,
+}
+
+impl<'a> Iterator for ToRootChunkIter<'a> {
+    type Item = &'a Chunk;
+
+    fn next(&mut self) -> Option<&'a Chunk> {
+        if self.first {
+            self.first = false;
+            Some(self.chunk)
+        } else {
+            self.chunk.dst.and_then(|dst|
+                self.chunked_sentence.get(dst)
+                    .map(|dst_chunk| {
+                        self.chunk = dst_chunk;
+                        dst_chunk
+                    })
+            )
+        }
+    }
+}
+
+impl<'a> Clone for ToRootChunkIter<'a> {
+    fn clone(&self) -> Self {
+        ToRootChunkIter {
+            first: true,
+            org_chunk: self.org_chunk,
+            chunk: self.org_chunk,
+            chunked_sentence: self.chunked_sentence,
+        }
+    }
+}
+
+impl<'a> ToRootChunkIter<'a> {
+    pub fn new(chunk: &'a Chunk, chunked_sentence: &'a Vec<Chunk>) -> ToRootChunkIter<'a> {
+        ToRootChunkIter {
+            first: true,
+            org_chunk: chunk,
+            chunk: chunk,
+            chunked_sentence: chunked_sentence,
+        }
     }
 }

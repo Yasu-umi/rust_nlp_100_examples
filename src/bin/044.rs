@@ -12,9 +12,9 @@ use std::io::{BufWriter, Write};
 fn save_text_as_graph(filedir: &str) {
     let config = config::Config::new().unwrap();
     if let Ok(text) = fetch::string(fetch::create_client(), config.neko_text_url.as_str()) {
-        let chunked_sentences = structs::Chunk::from_sentences(text);
+        let chunked_sentences = structs::ChunkedSentenceIter::from_sentences(text);
 
-        for (i, chunked_sentence) in chunked_sentences.iter().enumerate() {
+        for (i, chunked_sentence) in chunked_sentences.enumerate() {
             let mut nodes = Vec::new();
             let mut edges = Vec::new();
             for (j, chunk) in chunked_sentence.iter().enumerate() {

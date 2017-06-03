@@ -8,7 +8,7 @@ use nlp_100_examples::*;
 fn main() {
     let config = config::Config::new().unwrap();
     if let Ok(text) = fetch::string(fetch::create_client(), config.neko_text_url.as_str()) {
-        let chunked_sentences = structs::Chunk::from_sentences(text);
+        let chunked_sentences = structs::ChunkedSentenceIter::from_sentences(text);
 
         for chunked_sentence in chunked_sentences {
             let tmp_chunked_sentence = chunked_sentence.clone();
