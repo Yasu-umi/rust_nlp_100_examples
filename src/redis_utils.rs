@@ -27,6 +27,22 @@ pub fn set_name_area<T: Iterator<Item=Artist>>(connect: &redis::Connection, arti
     flush_and_set_multiple(connect, items)
 }
 
+pub fn set_name_tags<T: Iterator<Item=Artist>>(connect: &redis::Connection, artists: T)
+    -> Result<(), redis::RedisError> {
+    let items = artists.into_iter()
+        .filter_map(|artist| {
+            let name = artist.name;
+            artist.tags.and_then(|tags| {
+                if let Ok(tags_json) = serde_json::to_string(&tags) {
+                    Some((name, tags_json))
+                } else {
+                    None
+                }
+            })
+        });
+    flush_and_set_multiple(connect, items)
+}
+
 pub fn get_value_by_key<K, V>(connect: &redis::Connection, key: K)
     -> Result<V, redis::RedisError>
     where K: ToRedisArgs, V: FromRedisValue {

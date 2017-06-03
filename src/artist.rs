@@ -1,29 +1,29 @@
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct Alias {
     pub name: String,
     pub sort_name: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct Date {
     pub year: Option<i64>,
     pub month: Option<i64>,
     pub date: Option<i64>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct Tag {
     pub count: i64,
     pub value: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct Rating {
     pub count: i64,
     pub value: i64,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct Artist {
     pub id: i64,
     pub gid: String,
