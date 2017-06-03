@@ -1,6 +1,6 @@
 extern crate redis;
 
-use self::redis::Commands;
+use self::redis::{FromRedisValue, Commands};
 use artist::Artist;
 
 pub fn create_connect(url: &str) -> Result<redis::Connection, redis::RedisError> {
@@ -22,4 +22,13 @@ pub fn set_artists(connect: &redis::Connection, artists: Vec<Artist>) -> Result<
 pub fn get_area_by_name(connect: &redis::Connection, name: &str) -> Result<String, redis::RedisError> {
     let res: String = try!(connect.get(name));
     Ok(res)
+}
+
+pub fn get_names_iter<T: FromRedisValue>(connect: &redis::Connection) -> Result<redis::Iter<T>, redis::RedisError> {
+    connect.scan()
+}
+
+pub fn get_areas_iter<'a, T: FromRedisValue>(connect: &'a redis::Connection) -> Result<impl Iterator<Item=String> + 'a, redis::RedisError>  {
+    let iter = try!(get_names_iter::<String>(connect));
+    Ok(iter.flat_map(move |name| get_area_by_name(connect, name.as_str())))
 }
