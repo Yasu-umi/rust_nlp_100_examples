@@ -32,7 +32,8 @@ pub fn string(client: client::Client, url: &str) -> Result<String, Box<Error>> {
     Ok(text)
 }
 
-pub fn gz_reader(client: client::Client, url: &str) -> Result<impl io::BufRead, Box<Error>> {
+pub fn gz_reader(client: client::Client, url: &str)
+    -> Result<impl io::BufRead, Box<Error>> {
     let mut req = client.get(url);
     let mut headers = header::Headers::new();
     headers.set(header::AcceptEncoding(vec![header::qitem(header::Encoding::Gzip)]));
@@ -43,23 +44,29 @@ pub fn gz_reader(client: client::Client, url: &str) -> Result<impl io::BufRead, 
     Ok(io::BufReader::new(decorder))
 }
 
-pub fn gz_string_by_line<'a>(url: &'a str) -> Result<impl Iterator<Item=String> + 'a, Box<Error>> {
+pub fn gz_string_by_line<'a>(url: &'a str)
+    -> Result<impl Iterator<Item=String> + 'a, Box<Error>> {
     use self::io::BufRead;
     let reader = try!(gz_reader(create_client(), url));
-    Ok(reader.lines().filter_map(|res_line) if let Ok(line) = res_line { Some(line) } else { None })
+    Ok(reader.lines().filter_map(|res_line)
+        if let Ok(line) = res_line { Some(line) } else { None }
+    )
 }
 
-pub fn gz_json_by_line<'a>(url: &'a str) -> Result<impl Iterator<Item=Value> + 'a, Box<Error>> {
+pub fn gz_json_by_line<'a>(url: &'a str)
+    -> Result<impl Iterator<Item=Value> + 'a, Box<Error>> {
     let lines = try!(gz_string_by_line(url));
     Ok(lines.flat_map(|line| serde_json::from_str(line.as_str())))
 }
 
-pub fn gz_artists_by_line<'a>(url: &'a str) -> Result<impl Iterator<Item=Artist> + 'a, Box<Error>> {
+pub fn gz_artists_by_line<'a>(url: &'a str)
+    -> Result<impl Iterator<Item=Artist> + 'a, Box<Error>> {
     let lines = try!(gz_string_by_line(url));
     Ok(lines.flat_map(|line| serde_json::from_str(line.as_str())))
 }
 
-pub fn country_texts<'a>(url: &'a str, country_re: &str) -> Result<impl Iterator<Item=String> + 'a, Box<Error>> {
+pub fn country_texts<'a>(url: &'a str, country_re: &str)
+    -> Result<impl Iterator<Item=String> + 'a, Box<Error>> {
     let jsons = try!(gz_json_by_line(url));
     let re = try!(Regex::new(country_re));
     Ok(jsons.filter_map(move |json| {
