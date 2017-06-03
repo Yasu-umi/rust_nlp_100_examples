@@ -71,7 +71,7 @@ impl Chunk {
     fn from_cabocha_chunk(chunk: &cabocha::Chunk, tree: &cabocha::Tree, pos: &usize) -> Chunk {
         let token_range = chunk.token_pos..(chunk.token_pos + chunk.token_size);
         let morphs: Vec<Morph> = token_range.into_iter()
-            .map(|i| Morph::from_cabocha_token(tree.token(i).unwrap()))
+            .filter_map(|i| tree.token(i).map(Morph::from_cabocha_token))
             .collect();
         let dst = if chunk.link < 0 { None } else { Some(chunk.link as usize) };
         Chunk {
