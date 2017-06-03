@@ -59,12 +59,12 @@ pub fn gz_artists_by_line<'a>(url: &'a str) -> Result<impl Iterator<Item=Artist>
     Ok(lines.flat_map(|line| serde_json::from_str(line.as_str())))
 }
 
-pub fn country_texts<'a>(country_re: &str) -> Result<impl Iterator<Item=String> + 'a, Box<Error>> {
-    let url = "http://www.cl.ecei.tohoku.ac.jp/nlp100/data/jawiki-country.json.gz";
+pub fn country_texts<'a>(url: &'a str, country_re: &str) -> Result<impl Iterator<Item=String> + 'a, Box<Error>> {
     let jsons = try!(gz_json_by_line(url));
     let re = try!(Regex::new(country_re));
     Ok(jsons.filter_map(move |json| {
-        if let (&Value::String(ref title), &Value::String(ref text)) = (json.index("title"), json.index("text")) {
+        if let (&Value::String(ref title), &Value::String(ref text)) =
+            (json.index("title"), json.index("text")) {
             if re.is_match(title) {
                 Some(text.to_owned())
             } else {
@@ -76,13 +76,13 @@ pub fn country_texts<'a>(country_re: &str) -> Result<impl Iterator<Item=String> 
     }))
 }
 
-pub fn get_template_hash<F: Fn(String) -> String>(country: &str, formatter: F)
+pub fn get_template_hash<F: Fn(String) -> String>(url: &str, country: &str, formatter: F)
     -> Result<HashMap<String, String>, Box<Error>> {
     let spliter = try!(Regex::new(r"\n[\|}]"));
     let re = try!(Regex::new(r"(?s)^(.*?)\s=\s(.*)(?-s)$"));
     let mut hash = HashMap::new();
 
-    let sets = try!(country_texts(country))
+    let sets = try!(country_texts(url, country))
         .flat_map(|l|
             spliter.split(&*l)
                 .filter_map(|t| re.captures(t))
