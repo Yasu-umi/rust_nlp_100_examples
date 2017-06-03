@@ -10,14 +10,16 @@ pub fn create_connect(url: &str) -> Result<redis::Connection, redis::RedisError>
   Ok(connect)
 }
 
-pub fn flush_and_set_multiple<'a, T, U: ToRedisArgs>(connect: &redis::Connection, items: T) -> Result<(), redis::RedisError>
-    where T: Iterator<Item=(U, U)> {
+pub fn flush_and_set_multiple<'a, T, U>(connect: &redis::Connection, items: T)
+    -> Result<(), redis::RedisError>
+    where T: Iterator<Item=(U, U)>, U: ToRedisArgs {
     cmd("FLUSHDB").execute(connect);
     connect.set_multiple(items.collect::<Vec<(_, _)>>().as_slice())
 }
 
-pub fn set_name_area(connect: &redis::Connection, artists: Vec<Artist>) -> Result<(), redis::RedisError> {
-    let items = artists.into_iter()
+pub fn set_name_area<T: Iterator<Item=Artist>>(connect: &redis::Connection, artists: T)
+    -> Result<(), redis::RedisError> {
+    let items = artists
         .filter_map(|artist| {
             let name = artist.name;
             artist.area.map(|area| (name, area))
@@ -25,17 +27,20 @@ pub fn set_name_area(connect: &redis::Connection, artists: Vec<Artist>) -> Resul
     flush_and_set_multiple(connect, items)
 }
 
-pub fn get_value_by_key<K, V>(connect: &redis::Connection, key: K) -> Result<V, redis::RedisError>
+pub fn get_value_by_key<K, V>(connect: &redis::Connection, key: K)
+    -> Result<V, redis::RedisError>
     where K: ToRedisArgs, V: FromRedisValue {
     let res: V = try!(connect.get(key));
     Ok(res)
 }
 
-pub fn get_keys_iter<V: FromRedisValue>(connect: &redis::Connection) -> Result<redis::Iter<V>, redis::RedisError> {
+pub fn get_keys_iter<V: FromRedisValue>(connect: &redis::Connection)
+    -> Result<redis::Iter<V>, redis::RedisError> {
     connect.scan()
 }
 
-pub fn get_values_iter<'a, K, V>(connect: &'a redis::Connection) -> Result<impl Iterator<Item=V> + 'a, redis::RedisError>
+pub fn get_values_iter<'a, K, V>(connect: &'a redis::Connection)
+    -> Result<impl Iterator<Item=V> + 'a, redis::RedisError>
     where K: ToRedisArgs + FromRedisValue + 'a, V : FromRedisValue + 'a {
     let iter = try!(get_keys_iter::<K>(connect));
     Ok(iter.flat_map(move |key| get_value_by_key::<K, V>(connect, key)))
