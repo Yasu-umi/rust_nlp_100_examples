@@ -11,7 +11,7 @@ pub struct Morph {
 }
 
 impl Morph {
-    pub fn from_mecab_node(node: mecab::Node) -> Morph {
+    pub fn from_mecab_node(node: &mecab::Node) -> Morph {
         let mut feature = node.feature.split(",");
         Morph {
             surface: (&(node.surface)[..(node.length as usize)]).to_string(),

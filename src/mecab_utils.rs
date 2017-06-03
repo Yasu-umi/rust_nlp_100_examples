@@ -12,7 +12,7 @@ pub fn feature_mappings(input: String) -> Vec<Morph> {
         match node.stat as i32 {
             mecab::MECAB_BOS_NODE => {}
             mecab::MECAB_EOS_NODE => {}
-            _ => features.push(Morph::from_mecab_node(node))
+            _ => features.push(Morph::from_mecab_node(&node))
         }
     }
     features
