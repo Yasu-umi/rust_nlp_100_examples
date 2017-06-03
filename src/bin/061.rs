@@ -7,8 +7,8 @@ use std::env;
 
 fn main() {
     if let Some(name) = env::args().collect::<Vec<String>>().get(1) {
-        if let Ok(connect) = redis::create_connect("redis://127.0.0.1/") {
-            if let Ok(area) = redis::get_area_by_name(&connect, name) {
+        if let Ok(connect) = redis_utils::create_connect("redis://127.0.0.1/") {
+            if let Ok(area) = redis_utils::get_area_by_name(&connect, name) {
                 println!("{}", area)
             } else {
                 println!("not found")

@@ -1,6 +1,6 @@
 extern crate redis;
 
-use redis::redis::Commands;
+use self::redis::Commands;
 use artist::Artist;
 
 pub fn create_connect(url: &str) -> Result<redis::Connection, redis::RedisError> {
@@ -10,12 +10,13 @@ pub fn create_connect(url: &str) -> Result<redis::Connection, redis::RedisError>
 }
 
 pub fn set_artists(connect: &redis::Connection, artists: Vec<Artist>) -> Result<(), redis::RedisError> {
-    for artist in artists {
-        if let Some(area) = artist.area {
-            let _: () = try!(connect.set(artist.name, area));
-        }
-    }
-    Ok(())
+    let items = artists.into_iter()
+        .filter_map(|artist| {
+            let name = artist.name;
+            artist.area.map(|area| (name, area))
+        })
+        .collect::<Vec<(String, String)>>();
+    connect.set_multiple(items.as_slice())
 }
 
 pub fn get_area_by_name(connect: &redis::Connection, name: &str) -> Result<String, redis::RedisError> {

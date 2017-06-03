@@ -6,4 +6,4 @@ pub mod fetch;
 pub mod structs;
 pub mod mecab_utils;
 pub mod artist;
-pub mod redis;
+pub mod redis_utils;
