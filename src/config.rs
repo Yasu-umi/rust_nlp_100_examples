@@ -15,7 +15,7 @@ pub struct Config {
 
 impl Config {
     pub fn new() -> Result<Config, Box<Error>> {
-        let path = Path::new("./config.json");
+        let path = Path::new("./src/config.json");
         let mut s = String::new();
         let mut file = try!(File::open(&path));
         let _ = try!(file.read_to_string(&mut s));
