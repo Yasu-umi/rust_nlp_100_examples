@@ -6,7 +6,7 @@ use nlp_100_examples::*;
 use std::env;
 
 fn main() {
-    let config = config::Config::new().unwrap();
+    let config = config::Config::new().expect("Failed to load config");
     if let Some(name) = env::args().collect::<Vec<String>>().get(1) {
         if let (Ok(connect), Ok(artists)) =
             (

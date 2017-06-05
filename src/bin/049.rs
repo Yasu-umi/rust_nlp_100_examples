@@ -23,7 +23,7 @@ fn join_by_arrow(acc: String, item: String) -> String {
 }
 
 fn main() {
-    let config = config::Config::new().unwrap();
+    let config = config::Config::new().expect("Failed to load config");
     if let Ok(text) = fetch::string(fetch::create_client(), config.neko_text_url.as_str()) {
         let chunked_sentences = structs::ChunkedSentenceIter::from_sentences(text);
 

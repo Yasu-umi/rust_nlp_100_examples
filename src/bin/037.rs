@@ -12,7 +12,7 @@ use nlp_100_examples::*;
 
 
 fn draw_top10_freq_bar_graph(filepath: &str) {
-    let config = config::Config::new().unwrap();
+    let config = config::Config::new().expect("Failed to load config");
     if let Ok(text) = fetch::string(fetch::create_client(), config.neko_text_url.as_str()) {
         let mut sorted_tumple_vec = mecab_utils::get_words_sorted_by_freq(text);
         sorted_tumple_vec.split_off(10);
