@@ -3,5 +3,6 @@
   "mongo_host": "localhost",
   "neko_text_url": "http://www.cl.ecei.tohoku.ac.jp/nlp100/data/neko.txt",
   "artists_json_url": "http://www.cl.ecei.tohoku.ac.jp/nlp100/data/artist.json.gz",
-  "country_json_url": "http://www.cl.ecei.tohoku.ac.jp/nlp100/data/jawiki-country.json.gz"
+  "country_json_url": "http://www.cl.ecei.tohoku.ac.jp/nlp100/data/jawiki-country.json.gz",
+  "iron_host": "0.0.0.0:3000"
 }

@@ -12,6 +12,7 @@ pub struct Config {
     pub neko_text_url: String,
     pub artists_json_url: String,
     pub country_json_url: String,
+    pub iron_host: String,
 }
 
 impl Config {

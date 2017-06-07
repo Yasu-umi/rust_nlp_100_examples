@@ -38,6 +38,6 @@ ADD src src
 ADD Cargo.toml Cargo.toml
 ADD Cargo.lock Cargo.lock
 
-EXPOSE 6379 27017
+EXPOSE 3000 6379 27017
 
 CMD ["/bin/bash"]
