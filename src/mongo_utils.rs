@@ -1,8 +1,10 @@
 extern crate mongodb;
 
-use ::bson::{Bson, to_bson};
+use ::bson::{Bson, to_bson, from_bson, ordered};
 use self::mongodb::{Client, ThreadedClient, coll};
 use self::mongodb::db::ThreadedDatabase;
+
+use std::error::Error;
 
 use config::Config;
 use artist::Artist;
@@ -50,4 +52,16 @@ pub fn insert_artists(collection: &coll::Collection, artists: Vec<Artist>) -> Op
         }
     }
     Some(())
+}
+
+pub fn create_artist_cursor<'a>(collection: &coll::Collection, query: Option<ordered::OrderedDocument>)
+    -> Result<impl Iterator<Item=Option<Artist>> + 'a, Box<Error>> {
+    let cursor = try!(collection.find(query, None));
+    Ok(cursor.map(|res_doc|
+        if let Ok(doc) = res_doc {
+            from_bson::<Artist>(Bson::Document(doc)).ok()
+        } else {
+            None
+        }
+    ))
 }
