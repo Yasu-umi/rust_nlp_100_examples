@@ -1,5 +1,6 @@
 {
   "redis_host": "redis://127.0.0.1/",
+  "mongo_host": "localhost",
   "neko_text_url": "http://www.cl.ecei.tohoku.ac.jp/nlp100/data/neko.txt",
   "artists_json_url": "http://www.cl.ecei.tohoku.ac.jp/nlp100/data/artist.json.gz",
   "country_json_url": "http://www.cl.ecei.tohoku.ac.jp/nlp100/data/jawiki-country.json.gz"

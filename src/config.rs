@@ -8,6 +8,7 @@ use std::io::Read;
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Config {
     pub redis_host: String,
+    pub mongo_host: String,
     pub neko_text_url: String,
     pub artists_json_url: String,
     pub country_json_url: String,

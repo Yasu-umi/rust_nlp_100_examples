@@ -17,3 +17,5 @@ gnuplot = "*"
 url = { git = "https://github.com/servo/rust-url" }
 cabocha = "*"
 redis = "*"
+mongodb = "*"
+bson = "*"
