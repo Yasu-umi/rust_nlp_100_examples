@@ -48,15 +48,17 @@ pub fn insert_artists(collection: &coll::Collection, artists: Vec<Artist>) -> Op
             } else {
                 return None
             }
-            
         }
     }
     Some(())
 }
 
-pub fn create_artist_cursor<'a>(collection: &coll::Collection, query: Option<ordered::OrderedDocument>)
-    -> Result<impl Iterator<Item=Option<Artist>> + 'a, Box<Error>> {
-    let cursor = try!(collection.find(query, None));
+pub fn create_artist_cursor<'a>(
+        collection: &coll::Collection,
+        query: Option<ordered::OrderedDocument>,
+        option: Option<coll::options::FindOptions>,
+    ) -> Result<impl Iterator<Item=Option<Artist>> + 'a, Box<Error>> {
+    let cursor = try!(collection.find(query, option));
     Ok(cursor.map(|res_doc|
         if let Ok(doc) = res_doc {
             from_bson::<Artist>(Bson::Document(doc)).ok()

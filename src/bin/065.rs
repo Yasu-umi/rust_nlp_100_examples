@@ -19,7 +19,7 @@ fn main() {
                 .expect("Failed to initialize mongo client");
 
             let query = doc! { "name" => name };
-            let cursor = mongo_utils::create_artist_cursor(&collection, Some(query))
+            let cursor = mongo_utils::create_artist_cursor(&collection, Some(query), None)
                 .ok().expect("Failed to execute find.");
             for artist in cursor.filter_map(|item| item) {
                 println!("{:?}", artist);
