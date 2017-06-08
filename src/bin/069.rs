@@ -37,7 +37,7 @@ fn main() {
         if let Some(name) = req.extensions.get::<Router>().map(|query| query.find("name")).unwrap_or(None) {
             if let Ok(artists) = artists_by_name(&config, name) {
                 if let Ok(body) = serde_json::to_string(&artists) {
-                    return Ok(Response::with((ContentType::json().0, status::Ok, body)))
+                    return Ok(Response::with((ContentType::json().0, status::Ok, body)));
                 }
             }
         }

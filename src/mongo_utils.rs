@@ -46,7 +46,7 @@ pub fn insert_artists(collection: &coll::Collection, artists: Vec<Artist>) -> Op
             if let Ok(_) = collection.insert_many(buffer_vec, None) {
                 buffer_vec = Vec::new();
             } else {
-                return None
+                return None;
             }
         }
     }
