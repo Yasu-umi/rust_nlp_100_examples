@@ -13,3 +13,4 @@ pub mod artist;
 pub mod redis_utils;
 pub mod config;
 pub mod mongo_utils;
+pub mod sentiment_utils;
