@@ -4,5 +4,7 @@
   "neko_text_url": "http://www.cl.ecei.tohoku.ac.jp/nlp100/data/neko.txt",
   "artists_json_url": "http://www.cl.ecei.tohoku.ac.jp/nlp100/data/artist.json.gz",
   "country_json_url": "http://www.cl.ecei.tohoku.ac.jp/nlp100/data/jawiki-country.json.gz",
-  "iron_host": "0.0.0.0:3000"
+  "iron_host": "0.0.0.0:3000",
+  "movie_review_data_url": "http://www.cs.cornell.edu/people/pabo/movie-review-data/rt-polaritydata.tar.gz",
+  "sentiment_path": "tmp/sentiment.txt"
 }

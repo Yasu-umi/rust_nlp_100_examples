@@ -13,6 +13,8 @@ pub struct Config {
     pub artists_json_url: String,
     pub country_json_url: String,
     pub iron_host: String,
+    pub movie_review_data_url: String,
+    pub sentiment_path: String,
 }
 
 impl Config {
