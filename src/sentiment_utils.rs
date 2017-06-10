@@ -1,9 +1,13 @@
 extern crate encoding;
 extern crate regex;
+extern crate wordnet_stemmer;
 
 use self::encoding::{Encoding, DecoderTrap};
 use self::encoding::all::ISO_8859_1;
+use self::wordnet_stemmer::{WordnetStemmer};
 use self::regex::Regex;
+
+use wordnet_utils;
 
 use std::collections::HashMap;
 
@@ -47,4 +51,16 @@ pub fn sorted_by_frequent_terms_from_lines(lines: &Vec<String>)
     let mut count_vec: Vec<(String, u32)> = counter.into_iter().collect();
     count_vec.sort_by(|a, b| b.1.cmp(&a.1));
     count_vec.into_iter().map(|(term, _)| term)
+}
+
+pub fn get_features_from_line<'a, T>(wn: &'a WordnetStemmer, lines: T, stop_words: Vec<String>)
+    -> impl Iterator<Item=Vec<(String, Option<wordnet_utils::Part>)>> + 'a
+    where T: Iterator<Item=&'a String> + 'a {
+    let re = Regex::new(r"[,.:;-\\)\\(\?\s]").unwrap();
+    lines.map(move |line|
+        re.split(line.as_str())
+            .filter(|&term| !term.is_empty() && !stop_words.contains(&term.to_owned()))
+            .map(|term| wordnet_utils::lemma(wn, term.to_owned()))
+            .collect()
+    )
 }

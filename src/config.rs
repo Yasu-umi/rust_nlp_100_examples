@@ -15,6 +15,7 @@ pub struct Config {
     pub iron_host: String,
     pub movie_review_data_url: String,
     pub sentiment_path: String,
+    pub wordnet_dict_path: String,
 }
 
 impl Config {

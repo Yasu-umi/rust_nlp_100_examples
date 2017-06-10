@@ -14,3 +14,4 @@ pub mod redis_utils;
 pub mod config;
 pub mod mongo_utils;
 pub mod sentiment_utils;
+pub mod wordnet_utils;

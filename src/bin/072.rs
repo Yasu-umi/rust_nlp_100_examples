@@ -1,4 +1,4 @@
-#!rust run
+#!rust run#!rust run
 
 extern crate nlp_100_examples;
 
@@ -16,7 +16,12 @@ fn main() {
         .map(|(raw_text, _)| raw_text);
     let lines = sentiment_utils::create_lines_from_latin1(raw_texts);
 
-    for stop_word in sentiment_utils::sorted_by_frequent_terms_from_lines(&lines).take(100) {
-        println!("{}", stop_word);
+    let stop_words = sentiment_utils::sorted_by_frequent_terms_from_lines(&lines)
+        .take(100).collect::<Vec<String>>();
+
+    if let Some(wn) = wordnet_utils::create_wordnet_stemmter() {
+        for feature in sentiment_utils::get_features_from_line(&wn, lines.iter(), stop_words) {
+            println!("{:?}", feature);
+        }
     }
 }
