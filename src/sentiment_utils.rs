@@ -13,7 +13,7 @@ use std::collections::HashMap;
 
 
 pub fn create_lines_from_latin1<'a, T>(raw_texts: T)
-    -> Vec<String>
+    -> impl Iterator<Item=String> + 'a
     where T: Iterator<Item=Vec<u8>> + 'a {
     raw_texts
         .filter_map(|raw_text|
@@ -24,10 +24,7 @@ pub fn create_lines_from_latin1<'a, T>(raw_texts: T)
                     .collect::<Vec<String>>()
             ).ok()
         )
-        .fold(Vec::new(), |mut acc, mut item| {
-            acc.append(&mut item);
-            acc
-        })
+        .flat_map(|lines| lines)
 }
 
 pub fn create_word_counter_from_lines(lines: &Vec<String>)

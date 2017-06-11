@@ -14,7 +14,7 @@ fn main() {
     let raw_texts = all_files.into_iter()
         .filter(|&(_, ref path)| path.find("pos").is_some() || path.find("neg").is_some())
         .map(|(raw_text, _)| raw_text);
-    let lines = sentiment_utils::create_lines_from_latin1(raw_texts);
+    let lines = sentiment_utils::create_lines_from_latin1(raw_texts).collect::<Vec<String>>();
 
     let stop_words = sentiment_utils::sorted_by_frequent_terms_from_lines(&lines)
         .map(|word| word.to_lowercase())
