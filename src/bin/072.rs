@@ -17,10 +17,12 @@ fn main() {
     let lines = sentiment_utils::create_lines_from_latin1(raw_texts);
 
     let stop_words = sentiment_utils::sorted_by_frequent_terms_from_lines(&lines)
+        .map(|word| word.to_lowercase())
         .take(100).collect::<Vec<String>>();
 
     if let Some(wn) = wordnet_utils::create_wordnet_stemmter() {
-        for feature in sentiment_utils::get_features_from_line(&wn, lines.iter(), stop_words) {
+        let features = sentiment_utils::get_features_from_line(&wn, lines.iter(), stop_words);
+        for feature in features {
             println!("{:?}", feature);
         }
     }

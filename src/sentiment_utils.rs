@@ -59,7 +59,7 @@ pub fn get_features_from_line<'a, T>(wn: &'a WordnetStemmer, lines: T, stop_word
     let re = Regex::new(r"[,.:;-\\)\\(\?\s]").unwrap();
     lines.map(move |line|
         re.split(line.as_str())
-            .filter(|&term| !term.is_empty() && !stop_words.contains(&term.to_owned()))
+            .filter(|&term| !term.is_empty() && !stop_words.contains(&term.to_owned().to_lowercase()))
             .map(|term| wordnet_utils::lemma(wn, term.to_owned()))
             .collect()
     )
