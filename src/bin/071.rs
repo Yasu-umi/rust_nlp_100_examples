@@ -11,12 +11,27 @@ fn main() {
     let client = fetch::create_client();
     let all_files = fetch::tar_gz_files(client, config.movie_review_data_url)
         .expect("Failed to fetch tar.gz");
-    let raw_texts = all_files.into_iter()
-        .filter(|&(_, ref path)| path.find("pos").is_some() || path.find("neg").is_some())
-        .map(|(raw_text, _)| raw_text);
-    let lines = sentiment_utils::create_lines_from_latin1(raw_texts);
 
-    for stop_word in sentiment_utils::sorted_by_frequent_terms_from_lines(&lines).take(100) {
+    let pos_raw_texts = all_files.iter()
+        .filter(|&&(_, ref path)| path.find("pos").is_some())
+        .map(|&(ref raw_text, _)| raw_text);
+    let neg_raw_texts = all_files.iter()
+        .filter(|&&(_, ref path)| path.find("neg").is_some())
+        .map(|&(ref raw_text, _)| raw_text);
+
+    let pos_lines = sentiment_utils::create_lines_from_latin1(pos_raw_texts).collect::<Vec<String>>();
+    let neg_lines = sentiment_utils::create_lines_from_latin1(neg_raw_texts).collect::<Vec<String>>();
+
+    let lines = pos_lines.iter().map(|line| line.clone())
+        .chain(neg_lines.iter().map(|line| line.clone()))
+        .collect::<Vec<String>>();
+    let stop_words = sentiment_utils::sorted_by_frequent_terms_from_lines(lines.iter())
+        .iter()
+        .map(|&(ref word, _)| word.to_lowercase())
+        .take(100)
+        .collect::<Vec<String>>();
+
+    for stop_word in stop_words {
         println!("{}", stop_word);
     }
 }
