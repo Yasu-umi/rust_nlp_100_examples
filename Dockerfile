@@ -15,6 +15,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14
     build-essential pkg-config autoconf libtool gettext \
     mecab mecab-ipadic-utf8 libmecab-dev \
     gnuplot5 fonts-ipafont-gothic graphviz \
+    libopenblas-dev \
     redis-server mongodb-org && \
 
     mkdir ~/tmp && \
