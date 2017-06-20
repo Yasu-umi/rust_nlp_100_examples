@@ -25,12 +25,8 @@ fn main() {
     let lines = pos_lines.iter().map(|line| line.clone())
         .chain(neg_lines.iter().map(|line| line.clone()))
         .collect::<Vec<String>>();
-    let stop_words = sentiment_utils::sorted_by_frequent_terms_from_lines(lines.iter())
-        .iter()
-        .map(|&(ref word, _)| word.to_lowercase())
-        .take(100)
-        .collect::<Vec<String>>();
 
+    let stop_words = sentiment_utils::get_stop_words(lines.iter());
     for stop_word in stop_words {
         println!("{}", stop_word);
     }

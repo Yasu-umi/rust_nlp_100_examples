@@ -9,7 +9,8 @@ use self::regex::Regex;
 
 use wordnet_utils;
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
+use std::collections::hash_map::RandomState;
 
 
 pub fn create_lines_from_latin1<'a, T>(raw_texts: T)
@@ -56,14 +57,24 @@ pub fn sorted_by_frequent_terms_from_lines<'a, T>(lines: T)
     count_vec
 }
 
-pub fn get_features_from_lines<'a, T>(wn: &'a WordnetStemmer, lines: T, stop_words: &'a Vec<String>)
+pub fn get_features_from_lines<'a, T>(wn: &'a WordnetStemmer, lines: T, stop_words: &'a HashSet<String, RandomState>)
     -> impl Iterator<Item=Vec<(String, Option<wordnet_utils::Part>)>> + 'a
     where T: Iterator<Item=&'a String> + 'a {
     let re = Regex::new(r"[,.:;-\\)\\(\?\s]").unwrap();
     lines.map(move |line|
         re.split(line.as_str())
-            .filter(|&term| !term.is_empty() && !stop_words.contains(&&term.to_owned().to_lowercase()))
+            .filter(|&term| !term.is_empty() && !stop_words.contains(&term.to_owned().to_lowercase()))
             .map(|term| wordnet_utils::lemma(wn, term.to_owned()))
             .collect()
     )
+}
+
+pub fn get_stop_words<'a, T>(lines: T)
+    -> impl Iterator<Item=String> + 'a
+    where T: Iterator<Item=&'a String> + 'a {
+     sorted_by_frequent_terms_from_lines(lines)
+        .into_iter()
+        .enumerate()
+        .filter(|&(i, (ref word, count))| i < 100 || word.len() < 3 || count < 2)
+        .map(|(_, (word, _))| word)
 }

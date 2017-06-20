@@ -4,6 +4,9 @@ extern crate nlp_100_examples;
 
 use nlp_100_examples::*;
 
+use std::collections::HashSet;
+use std::collections::hash_map::RandomState;
+
 
 fn main() {
     let config = config::Config::new()
@@ -22,14 +25,8 @@ fn main() {
     let pos_lines = sentiment_utils::create_lines_from_latin1(pos_raw_texts).collect::<Vec<String>>();
     let neg_lines = sentiment_utils::create_lines_from_latin1(neg_raw_texts).collect::<Vec<String>>();
 
-    let lines = pos_lines.iter().map(|line| line.clone())
-        .chain(neg_lines.iter().map(|line| line.clone()))
-        .collect::<Vec<String>>();
-    let stop_words = sentiment_utils::sorted_by_frequent_terms_from_lines(lines.iter())
-        .iter()
-        .map(|&(ref word, _)| word.to_lowercase())
-        .take(100)
-        .collect::<Vec<String>>();
+    let stop_words = sentiment_utils::get_stop_words(lines.iter())
+        .collect::<HashSet<String, RandomState>>();
 
     if let Some(wn) = wordnet_utils::create_wordnet_stemmter() {
         let features = sentiment_utils::get_features_from_lines(&wn, lines.iter(), &stop_words);

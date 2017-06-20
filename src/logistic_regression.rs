@@ -73,7 +73,7 @@ pub struct LogisticRegressionBuilder<FeatureLenType> {
 impl LogisticRegressionBuilder<()> {
     pub fn new() -> Self {
         LogisticRegressionBuilder {
-            learning_rate: 0.6f32,
+            learning_rate: 1.0f32,
             learning_rate_reduction_rate: 0.99f32,
             feature_len: (),
         }

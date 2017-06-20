@@ -6,7 +6,6 @@ extern crate ndarray;
 use nlp_100_examples::*;
 use ndarray::{Array1, Array2};
 
-
 use std::collections::HashSet;
 use std::collections::hash_map::RandomState;
 use std::iter::FromIterator;
@@ -39,12 +38,8 @@ fn main() {
         .chain(neg_lines.iter().map(|line| line.clone()))
         .collect::<Vec<String>>();
 
-    let word_counter = sentiment_utils::create_word_counter_from_lines(lines.iter());
-    let stop_words = word_counter.into_iter()
-        .enumerate()
-        .filter(|&(i, (ref word, count))| i < 100 || word.len() < 3 || count < 2)
-        .map(|(_, (word, _))| word)
-        .collect::<Vec<String>>();
+    let stop_words = sentiment_utils::get_stop_words(lines.iter())
+        .collect::<HashSet<String, RandomState>>();
     println!("stop words: {:?}", stop_words);
 
     if let Some(wn) = wordnet_utils::create_wordnet_stemmter() {
@@ -76,7 +71,7 @@ fn main() {
 
         let mut lr = logistic_regression::LogisticRegressionBuilder::new()
             .feature_len(feature_len)
-            .learning_rate(0.99f32)
+            .learning_rate(1.0f32)
             .learning_rate_reduction_rate(0.9999f32)
             .build();
         lr.learn(&feature_vec, &answers, 1000);
