@@ -25,6 +25,10 @@ fn main() {
     let pos_lines = sentiment_utils::create_lines_from_latin1(pos_raw_texts).collect::<Vec<String>>();
     let neg_lines = sentiment_utils::create_lines_from_latin1(neg_raw_texts).collect::<Vec<String>>();
 
+    let lines = pos_lines.iter().map(|line| line.clone())
+        .chain(neg_lines.iter().map(|line| line.clone()))
+        .collect::<Vec<String>>();
+
     let stop_words = sentiment_utils::get_stop_words(lines.iter())
         .collect::<HashSet<String, RandomState>>();
 
