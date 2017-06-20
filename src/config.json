@@ -1,11 +1,11 @@
 {
   "redis_host": "redis://127.0.0.1/",
   "mongo_host": "localhost",
-  "neko_text_url": "http://www.cl.ecei.tohoku.ac.jp/nlp100/data/neko.txt",
-  "artists_json_url": "http://www.cl.ecei.tohoku.ac.jp/nlp100/data/artist.json.gz",
-  "country_json_url": "http://www.cl.ecei.tohoku.ac.jp/nlp100/data/jawiki-country.json.gz",
   "iron_host": "0.0.0.0:3000",
-  "movie_review_data_url": "http://www.cs.cornell.edu/people/pabo/movie-review-data/rt-polaritydata.tar.gz",
+  "neko_text_url": "http://localhost:8000/data/neko.txt",
+  "artists_json_url": "http://localhost:8000/data/artist.json.gz",
+  "country_json_url": "http://localhost:8000/data/jawiki-country.json.gz",
+  "movie_review_data_url": "http://localhost:8000/data/rt-polaritydata.tar.gz",
   "sentiment_path": "tmp/sentiment.txt",
   "wordnet_dict_path": "tmp/WordNet-3.0/dict/"
 }

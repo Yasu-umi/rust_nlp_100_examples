@@ -18,6 +18,13 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14
     libopenblas-dev \
     redis-server mongodb-org && \
 
+    curl http://nginx.org/keys/nginx_signing.key | apt-key add - && \
+    sh -c "echo 'deb http://nginx.org/packages/ubuntu/ xenial nginx' >> /etc/apt/sources.list" && \
+    sh -c "echo 'deb-src http://nginx.org/packages/ubuntu/ xenial nginx' >> /etc/apt/sources.list" && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+    nginx && \
+
     mkdir ~/tmp && \
     cd ~/tmp && git clone https://github.com/taku910/crfpp.git && cd ./crfpp && \
     sed -i '/#include "winmain.h"/d' crf_test.cpp && \
@@ -39,6 +46,6 @@ ADD src src
 ADD Cargo.toml Cargo.toml
 ADD Cargo.lock Cargo.lock
 
-EXPOSE 3000 6379 27017
+EXPOSE 3000 6379 8000 27017
 
 CMD ["/bin/bash"]
