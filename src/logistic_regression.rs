@@ -8,9 +8,9 @@ pub struct LogisticRegression {
     learning_rate_reduction_rate: f32,
 }
 
+#[derive(Debug)]
 pub struct LogisticRegressionStatics {
     pub count: usize,
-    pub correct: usize,
     pub correct_count: usize,
     pub actual_positive_count: usize,
     pub predict_positive_count: usize,
@@ -21,7 +21,6 @@ impl LogisticRegressionStatics {
     pub fn new() -> Self {
         LogisticRegressionStatics {
             count: 0,
-            correct: 0,
             correct_count: 0,
             actual_positive_count: 0,
             predict_positive_count: 0,
@@ -45,6 +44,15 @@ impl LogisticRegressionStatics {
         let precision_rate = self.precision_rate();
         let recall_rate = self.recall_rate();
         (2f32 * precision_rate * recall_rate) / (precision_rate + recall_rate)
+    }
+
+    pub fn add_statics(mut self, statics: &LogisticRegressionStatics) -> Self {
+        self.count += statics.count;
+        self.correct_count += statics.correct_count;
+        self.actual_positive_count += statics.actual_positive_count;
+        self.predict_positive_count += statics.predict_positive_count;
+        self.correct_positive_count += statics.correct_positive_count;
+        self
     }
 }
 
