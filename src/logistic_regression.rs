@@ -8,6 +8,46 @@ pub struct LogisticRegression {
     learning_rate_reduction_rate: f32,
 }
 
+pub struct LogisticRegressionStatics {
+    pub count: usize,
+    pub correct: usize,
+    pub correct_count: usize,
+    pub actual_positive_count: usize,
+    pub predict_positive_count: usize,
+    pub correct_positive_count: usize,
+}
+
+impl LogisticRegressionStatics {
+    pub fn new() -> Self {
+        LogisticRegressionStatics {
+            count: 0,
+            correct: 0,
+            correct_count: 0,
+            actual_positive_count: 0,
+            predict_positive_count: 0,
+            correct_positive_count: 0,
+        }
+    }
+
+    pub fn precision_rate(&self) -> f32 {
+        self.correct_positive_count as f32 / self.predict_positive_count as f32
+    }
+
+    pub fn recall_rate(&self) -> f32 {
+        self.correct_positive_count as f32 / self.actual_positive_count as f32
+    }
+
+    pub fn correct_rate(&self) -> f32 {
+        (self.correct_count as f32) / (self.count as f32)
+    }
+
+    pub fn f_value(&self) -> f32 {
+        let precision_rate = self.precision_rate();
+        let recall_rate = self.recall_rate();
+        (2f32 * precision_rate * recall_rate) / (precision_rate + recall_rate)
+    }
+}
+
 impl LogisticRegression {
     pub fn new(feature_len: usize, learning_rate: f32, learning_rate_reduction_rate: f32)
         -> Self {
@@ -65,6 +105,24 @@ impl LogisticRegression {
         }
         println!("end learning");
         self
+    }
+
+    pub fn get_statics(&self, features_vec: &Array2<f32>, answers: &Array1<f32>)
+        -> LogisticRegressionStatics {
+        let mut statics = LogisticRegressionStatics::new();
+        let predict_answers = self.predict(features_vec);
+        for (predict, answer) in predict_answers.iter().zip(answers.iter()) {
+            let predict_answer = if *predict > 0.5f32 { 1f32 } else { 0f32 };
+            statics.count += 1;
+            let correct = predict_answer == *answer;
+            let positive = *answer == 1f32;
+            let predict_positive = predict_answer == 1f32;
+            if correct { statics.correct_count += 1; }
+            if positive { statics.actual_positive_count += 1; }
+            if predict_positive { statics.predict_positive_count += 1; }
+            if correct && predict_positive { statics.correct_positive_count += 1; }
+        }
+        statics
     }
 }
 
