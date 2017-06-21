@@ -40,7 +40,7 @@ fn main() {
 
     let stop_words = sentiment_utils::get_stop_words(lines.iter())
         .collect::<HashSet<String, RandomState>>();
-    println!("stop words: {:?}", stop_words);
+    println!("stop words len {}", stop_words.len());
 
     if let Some(wn) = wordnet_utils::create_wordnet_stemmter() {
         println!("get wordnet stemmer");
@@ -71,8 +71,6 @@ fn main() {
 
         let mut lr = logistic_regression::LogisticRegressionBuilder::new()
             .feature_len(feature_len)
-            .learning_rate(5.0f32)
-            .learning_rate_reduction_rate(0.9999f32)
             .build();
         lr.learn(&feature_vec, &answers, 1000);
 
@@ -80,7 +78,7 @@ fn main() {
         let mut correct = 0;
         for (predict, answer) in predict.iter().zip(answers.iter()) {
             let predict_answer = if *predict > 0.5f32 { 1f32 } else { 0f32 };
-            let proba =  if *predict > 0.5f32 { 1f32 - *predict } else { *predict };
+            let proba =  2f32 * if *predict > 0.5f32 { *predict - 0.5f32 } else { 0.5f32 - *predict };
             println!("answer: {}, predict_answer: {}, proba: {}", answer, predict_answer, proba);
             if &predict_answer == answer { correct += 1; }
         }

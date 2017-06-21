@@ -18,6 +18,10 @@ impl LogisticRegression {
         }
     }
 
+    pub fn get_weights(&self) -> Array1<f32> {
+        self.weights.clone()
+    }
+
     pub fn sigmoid(value: &f32) -> f32 {
         1f32 / (1f32 + (-value).exp())
     }
@@ -56,7 +60,7 @@ impl LogisticRegression {
             self.update(features_vec, answers);
             self.learning_rate = self.learning_rate * self.learning_rate_reduction_rate;
             if i % 10 == 0 {
-                println!("laeraning {}, cost {}", i, self.cost(features_vec, answers));
+                println!("laeraning {}, cost {} learning_rate {}", i, self.cost(features_vec, answers), self.learning_rate);
             }
         }
         println!("end learning");
@@ -73,8 +77,8 @@ pub struct LogisticRegressionBuilder<FeatureLenType> {
 impl LogisticRegressionBuilder<()> {
     pub fn new() -> Self {
         LogisticRegressionBuilder {
-            learning_rate: 1.0f32,
-            learning_rate_reduction_rate: 0.99f32,
+            learning_rate: 0.9f32,
+            learning_rate_reduction_rate: 0.9999f32,
             feature_len: (),
         }
     }
