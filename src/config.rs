@@ -16,6 +16,7 @@ pub struct Config {
     pub movie_review_data_url: String,
     pub sentiment_path: String,
     pub wordnet_dict_path: String,
+    pub others_token: String,
 }
 
 impl Config {

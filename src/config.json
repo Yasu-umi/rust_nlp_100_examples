@@ -7,5 +7,6 @@
   "country_json_url": "http://localhost:8000/data/jawiki-country.json.gz",
   "movie_review_data_url": "http://localhost:8000/data/rt-polaritydata.tar.gz",
   "sentiment_path": "tmp/sentiment.txt",
-  "wordnet_dict_path": "tmp/WordNet-3.0/dict/"
+  "wordnet_dict_path": "tmp/WordNet-3.0/dict/",
+  "others_token": "OTHERS_TOKEN"
 }

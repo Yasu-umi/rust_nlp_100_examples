@@ -1,11 +1,13 @@
 extern crate encoding;
 extern crate regex;
 extern crate wordnet_stemmer;
+extern crate ndarray;
 
 use self::encoding::{Encoding, DecoderTrap};
 use self::encoding::all::ISO_8859_1;
-use self::wordnet_stemmer::{WordnetStemmer};
 use self::regex::Regex;
+use self::wordnet_stemmer::WordnetStemmer;
+use self::ndarray::{Array1, Array2};
 
 use wordnet_utils;
 
@@ -77,4 +79,36 @@ pub fn get_stop_words<'a, T>(lines: T)
         .enumerate()
         .filter(|&(i, (ref word, count))| i < 100 || word.len() < 3 || count < 2)
         .map(|(_, (word, _))| word)
+}
+
+pub fn create_answers<'a, T>(pos_lines: T, neg_lines: T) -> Array1<f32>
+    where T: Iterator<Item=&'a String> + 'a {
+    Array1::<f32>::from_iter(pos_lines.map(|_| 1f32).chain(neg_lines.map(|_| 0f32)))
+}
+
+pub fn create_all_features<'a>(features: &'a Vec<Vec<(String, Option<wordnet_utils::Part>)>>, others_token: &'a String)
+    -> Vec<&'a String> {
+    let mut all_features = features.iter().flat_map(|vec| vec.iter().map(|&(ref feature, _)| feature))
+        .collect::<HashSet<&'a String, RandomState>>()
+        .into_iter()
+        .collect::<Vec<&'a String>>();
+    all_features.insert(0, others_token);
+    all_features
+}
+
+pub fn create_features_vec<'a, T>(features: T, all_features: &Vec<&String>, lines_len: usize, feature_len: usize)
+    -> Array2<f32>
+    where T: Iterator<Item=&'a Vec<(String, Option<wordnet_utils::Part>)>> + 'a {
+    let mut features_vec = Array2::<f32>::zeros((lines_len, feature_len));
+    for (i, _vec) in features.enumerate() {
+        let set = _vec.into_iter()
+            .map(|&(ref feature, _)| feature)
+            .collect::<HashSet<&String, RandomState>>();
+        for (j, term) in all_features.iter().enumerate() {
+            if j == 0 || set.contains(term) {
+                features_vec[[i, j]] = 1f32;
+            }
+        }
+    }
+    features_vec
 }

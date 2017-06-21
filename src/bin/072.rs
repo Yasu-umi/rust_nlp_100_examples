@@ -22,20 +22,23 @@ fn main() {
         .filter(|&&(_, ref path)| path.find("neg").is_some())
         .map(|&(ref raw_text, _)| raw_text);
 
-    let pos_lines = sentiment_utils::create_lines_from_latin1(pos_raw_texts).collect::<Vec<String>>();
-    let neg_lines = sentiment_utils::create_lines_from_latin1(neg_raw_texts).collect::<Vec<String>>();
+    let pos_lines = sentiment_utils::create_lines_from_latin1(pos_raw_texts)
+        .collect::<Vec<_>>();
+    let neg_lines = sentiment_utils::create_lines_from_latin1(neg_raw_texts)
+        .collect::<Vec<_>>();
 
     let lines = pos_lines.iter().map(|line| line.clone())
         .chain(neg_lines.iter().map(|line| line.clone()))
-        .collect::<Vec<String>>();
+        .collect::<Vec<_>>();
 
     let stop_words = sentiment_utils::get_stop_words(lines.iter())
         .collect::<HashSet<String, RandomState>>();
 
-    if let Some(wn) = wordnet_utils::create_wordnet_stemmter() {
-        let features = sentiment_utils::get_features_from_lines(&wn, lines.iter(), &stop_words);
-        for feature in features {
-            println!("{:?}", feature);
-        }
+
+    let wn = wordnet_utils::create_wordnet_stemmter()
+        .expect("Failed to create wordnet stemmer");
+    let features = sentiment_utils::get_features_from_lines(&wn, lines.iter(), &stop_words);
+    for feature in features {
+        println!("{:?}", feature);
     }
 }
