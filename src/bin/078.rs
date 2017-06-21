@@ -25,7 +25,9 @@ fn main() {
         .collect::<Vec<_>>();
 
     let k = 5;
-    let statics = sentiment_utils::k_cross_validation(k, pos_lines, neg_lines)
+    let learning_n = 1000;
+
+    let statics = sentiment_utils::k_cross_validation(k, learning_n, pos_lines, neg_lines)
         .iter()
         .fold(logistic_regression::LogisticRegressionStatics::new(), |sum, stats| sum.add_statics(stats));
     println!(

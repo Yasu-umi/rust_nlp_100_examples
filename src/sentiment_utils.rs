@@ -126,6 +126,8 @@ pub fn create_features_vec<'a, T>(features: T, all_features: &Vec<&String>, line
 pub struct LeagningResult {
     pub feature_len: usize,
     pub all_features: Vec<String>,
+    pub features_vec: Array2<f32>,
+    pub answers: Array1<f32>,
     pub stop_words: HashSet<String, RandomState>,
     pub lr: LogisticRegression,
 }
@@ -166,6 +168,8 @@ pub fn learning<'a>(
     LeagningResult {
         feature_len: feature_len,
         all_features: all_features.into_iter().map(|feature| feature.clone()).collect::<Vec<_>>(),
+        features_vec: learning_features_vec,
+        answers: learning_answers,
         stop_words: stop_words,
         lr: lr,
     }
@@ -189,7 +193,7 @@ pub fn validate<'a>(
     leagning_result.lr.get_statics(&learning_features_vec, &validation_answers)
 }
 
-pub fn k_cross_validation(k: usize, pos_lines: Vec<String>, neg_lines: Vec<String>)
+pub fn k_cross_validation(k: usize, learning_n: usize, pos_lines: Vec<String>, neg_lines: Vec<String>)
     -> Vec<LogisticRegressionStatics> {
     let config = Config::new()
         .expect("Failed to load config");
@@ -214,7 +218,7 @@ pub fn k_cross_validation(k: usize, pos_lines: Vec<String>, neg_lines: Vec<Strin
 
         let wn = wordnet_utils::create_wordnet_stemmter()
             .expect("Failed to create wordnet stemmer");
-        let leagning_result = learning(&wn, learning_data, 10, &config.others_token);
+        let leagning_result = learning(&wn, learning_data, learning_n, &config.others_token);
 
         validate(&wn, leagning_result, validation_data)
     }).collect_into(&mut result);

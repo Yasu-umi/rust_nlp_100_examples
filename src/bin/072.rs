@@ -34,7 +34,6 @@ fn main() {
     let stop_words = sentiment_utils::get_stop_words(lines.iter())
         .collect::<HashSet<String, RandomState>>();
 
-
     let wn = wordnet_utils::create_wordnet_stemmter()
         .expect("Failed to create wordnet stemmer");
     let features = sentiment_utils::get_features_from_lines(&wn, lines.iter(), &stop_words);

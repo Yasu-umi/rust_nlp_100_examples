@@ -4,9 +4,6 @@ extern crate nlp_100_examples;
 
 use nlp_100_examples::*;
 
-use std::collections::HashSet;
-use std::collections::hash_map::RandomState;
-
 
 fn main() {
     let config = config::Config::new()
@@ -27,50 +24,24 @@ fn main() {
     let neg_lines = sentiment_utils::create_lines_from_latin1(neg_raw_texts)
         .collect::<Vec<_>>();
 
-    let pos_lines_len = pos_lines.len();
-    let ng_lines_len = neg_lines.len();
-
-    let answers = sentiment_utils::create_answers(pos_lines.iter(), neg_lines.iter());
-
-    let lines = pos_lines.iter().map(|line| line.clone())
-        .chain(neg_lines.iter().map(|line| line.clone()))
+    let learning_data = sentiment_utils::create_answers_iter(pos_lines.iter(), neg_lines.iter())
+        .zip(pos_lines.iter().chain(neg_lines.iter()))
         .collect::<Vec<_>>();
-
-    let stop_words = sentiment_utils::get_stop_words(lines.iter())
-        .collect::<HashSet<String, RandomState>>();
-    println!("stop words len {}", stop_words.len());
 
     let wn = wordnet_utils::create_wordnet_stemmter()
         .expect("Failed to create wordnet stemmer");
 
-    let features = sentiment_utils::get_features_from_lines(&wn, lines.iter(), &stop_words)
-        .collect::<Vec<_>>();
-    let all_features = sentiment_utils::create_all_features(&features, &config.others_token);
-    let feature_len = all_features.len();
-    println!("features_vec len {}", feature_len);
+    let learning_n = 1000;
 
-    let features_vec = sentiment_utils::create_features_vec(
-        features.iter(),
-        &all_features,
-        pos_lines_len + ng_lines_len,
-        feature_len
-    );
+    let learning_result = sentiment_utils::learning(&wn, learning_data, learning_n, &config.others_token);
 
-    let answers_len = answers.len();
-    println!("answers len {}", answers_len);
-
-    let mut lr = logistic_regression::LogisticRegressionBuilder::new()
-        .feature_len(feature_len)
-        .build();
-    lr.learn(&features_vec, &answers, 1000);
-
-    let predict = lr.predict(&features_vec);
+    let predict = learning_result.lr.predict(&learning_result.features_vec);
     let mut correct = 0;
-    for (predict, answer) in predict.iter().zip(answers.iter()) {
+    for (predict, answer) in predict.iter().zip(learning_result.answers.iter()) {
         let predict_answer = if *predict > 0.5f32 { 1f32 } else { 0f32 };
         let proba =  2f32 * if *predict > 0.5f32 { *predict - 0.5f32 } else { 0.5f32 - *predict };
         println!("answer: {}, predict_answer: {}, proba: {}", answer, predict_answer, proba);
         if &predict_answer == answer { correct += 1; }
     }
-    println!("correct: {}, wrong: {}", correct, answers.len() - correct);
+    println!("correct: {}, wrong: {}", correct, learning_result.answers.len() - correct);
 }

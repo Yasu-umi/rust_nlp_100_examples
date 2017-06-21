@@ -4,9 +4,6 @@ extern crate nlp_100_examples;
 
 use nlp_100_examples::*;
 
-use std::collections::HashSet;
-use std::collections::hash_map::RandomState;
-
 
 fn main() {
     let config = config::Config::new()
@@ -27,44 +24,18 @@ fn main() {
     let neg_lines = sentiment_utils::create_lines_from_latin1(neg_raw_texts)
         .collect::<Vec<_>>();
 
-    let pos_lines_len = pos_lines.len();
-    let ng_lines_len = neg_lines.len();
-
-    let answers = sentiment_utils::create_answers(pos_lines.iter(), neg_lines.iter());
-
-    let lines = pos_lines.iter().map(|line| line.clone())
-        .chain(neg_lines.iter().map(|line| line.clone()))
+    let learning_data = sentiment_utils::create_answers_iter(pos_lines.iter(), neg_lines.iter())
+        .zip(pos_lines.iter().chain(neg_lines.iter()))
         .collect::<Vec<_>>();
-
-    let stop_words = sentiment_utils::get_stop_words(lines.iter())
-        .collect::<HashSet<String, RandomState>>();
-    println!("stop words len {}", stop_words.len());
 
     let wn = wordnet_utils::create_wordnet_stemmter()
         .expect("Failed to create wordnet stemmer");
 
-    let features = sentiment_utils::get_features_from_lines(&wn, lines.iter(), &stop_words)
-        .collect::<Vec<_>>();
-    let all_features = sentiment_utils::create_all_features(&features, &config.others_token);
-    let feature_len = all_features.len();
-    println!("features_vec len {}", feature_len);
+    let learning_n = 1000;
 
-    let features_vec = sentiment_utils::create_features_vec(
-        features.iter(),
-        &all_features,
-        pos_lines_len + ng_lines_len,
-        feature_len
-    );
+    let learning_result = sentiment_utils::learning(&wn, learning_data, learning_n, &config.others_token);
 
-    let answers_len = answers.len();
-    println!("answers len {}", answers_len);
-
-    let mut lr = logistic_regression::LogisticRegressionBuilder::new()
-        .feature_len(feature_len)
-        .build();
-    lr.learn(&features_vec, &answers, 1000);
-
-    let statics = lr.get_statics(&features_vec, &answers);
+    let statics = learning_result.lr.get_statics(&learning_result.features_vec, &learning_result.answers);
 
     println!(
         "予測の正解率: {}\n正例に関する適合率: {}\n再現率: {}\nF1スコア: {}",
