@@ -12,3 +12,11 @@ cargo build test
 ```
 docker run -it --rm -v `pwd`:/root/rust_nlp_100_examples --name rust_nlp_100_examples rust_nlp_100_examples cargo build
 ```
+
+run example
+
+```
+docker run -it --rm -v `pwd`:/root/rust_nlp_100_examples --name rust_nlp_100_examples rust_nlp_100_examples /bin/bash
+sh etc/entrypoint.sh
+cargo run --bin XXX
+```
