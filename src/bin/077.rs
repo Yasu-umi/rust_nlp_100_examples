@@ -32,10 +32,11 @@ fn main() {
         .expect("Failed to create wordnet stemmer");
 
     let learning_n = 1000;
+    let threshold = 0.5;
 
     let learning_result = sentiment_utils::learning(&wn, learning_data, learning_n, &config.others_token);
 
-    let statics = learning_result.lr.get_statics(&learning_result.features_vec, &learning_result.answers);
+    let statics = learning_result.lr.get_statics(&learning_result.features_vec, &learning_result.answers, threshold);
 
     println!(
         "予測の正解率: {}\n正例に関する適合率: {}\n再現率: {}\nF1スコア: {}",

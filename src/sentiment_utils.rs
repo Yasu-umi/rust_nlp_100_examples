@@ -179,6 +179,7 @@ pub fn validate<'a>(
     wn: &'a WordnetStemmer,
     leagning_result: LeagningResult,
     validation_data: Vec<(f32, &'a String)>,
+    threshold: f32,
 ) -> LogisticRegressionStatics {
     let validation_lines = validation_data.iter().map(|&(_, line)| line.clone()).collect::<Vec<_>>();
     let validation_answers = Array1::<f32>::from_iter(validation_data.iter().map(|&(answer, _)| answer));
@@ -190,10 +191,10 @@ pub fn validate<'a>(
         validation_lines.len(),
         leagning_result.feature_len
     );
-    leagning_result.lr.get_statics(&learning_features_vec, &validation_answers)
+    leagning_result.lr.get_statics(&learning_features_vec, &validation_answers, threshold)
 }
 
-pub fn k_cross_validation(k: usize, learning_n: usize, pos_lines: Vec<String>, neg_lines: Vec<String>)
+pub fn k_cross_validation(k: usize, learning_n: usize, threshold: f32, pos_lines: Vec<String>, neg_lines: Vec<String>)
     -> Vec<LogisticRegressionStatics> {
     let config = Config::new()
         .expect("Failed to load config");
@@ -220,7 +221,7 @@ pub fn k_cross_validation(k: usize, learning_n: usize, pos_lines: Vec<String>, n
             .expect("Failed to create wordnet stemmer");
         let leagning_result = learning(&wn, learning_data, learning_n, &config.others_token);
 
-        validate(&wn, leagning_result, validation_data)
+        validate(&wn, leagning_result, validation_data, threshold)
     }).collect_into(&mut result);
     result
 }

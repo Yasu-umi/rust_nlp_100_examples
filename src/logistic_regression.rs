@@ -115,12 +115,12 @@ impl LogisticRegression {
         self
     }
 
-    pub fn get_statics(&self, features_vec: &Array2<f32>, answers: &Array1<f32>)
+    pub fn get_statics(&self, features_vec: &Array2<f32>, answers: &Array1<f32>, threshold: f32)
         -> LogisticRegressionStatics {
         let mut statics = LogisticRegressionStatics::new();
         let predict_answers = self.predict(features_vec);
         for (predict, answer) in predict_answers.iter().zip(answers.iter()) {
-            let predict_answer = if *predict > 0.5f32 { 1f32 } else { 0f32 };
+            let predict_answer = if *predict > threshold { 1f32 } else { 0f32 };
             statics.count += 1;
             let correct = predict_answer == *answer;
             let positive = *answer == 1f32;

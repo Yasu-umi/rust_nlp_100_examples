@@ -26,8 +26,9 @@ fn main() {
 
     let k = 5;
     let learning_n = 1000;
+    let threshold = 0.5;
 
-    let statics = sentiment_utils::k_cross_validation(k, learning_n, pos_lines, neg_lines)
+    let statics = sentiment_utils::k_cross_validation(k, learning_n, threshold, pos_lines, neg_lines)
         .iter()
         .fold(logistic_regression::LogisticRegressionStatics::new(), |sum, stats| sum.add_statics(stats));
     println!(
