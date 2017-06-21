@@ -194,22 +194,19 @@ pub fn validate<'a>(
     leagning_result.lr.get_statics(&learning_features_vec, &validation_answers, threshold)
 }
 
-pub fn k_cross_validation(k: usize, learning_n: usize, threshold: f32, pos_lines: Vec<String>, neg_lines: Vec<String>)
+pub fn k_cross_validation<'a>(k: usize, learning_n: usize, threshold: f32, whole_data: Vec<(f32, &'a String)>)
     -> Vec<LogisticRegressionStatics> {
     let config = Config::new()
         .expect("Failed to load config");
 
-    let total_len = pos_lines.len() + neg_lines.len();
+    let total_len = whole_data.len();
     let n = if total_len % k == 0 { total_len / k } else { total_len / k + 1 };
 
     let mut result = Vec::with_capacity(k);
-    (0..k).collect::<Vec<_>>().par_iter().map(|i| {
-        let answer_line_iter = create_answers_iter(pos_lines.iter(), neg_lines.iter())
-            .zip(pos_lines.iter().chain(neg_lines.iter()));
-
+    (0..k).collect::<Vec<_>>().par_iter().map(move|i| {
         let mut learning_data = Vec::with_capacity(n * (k-1));
         let mut validation_data = Vec::with_capacity(n);
-        for (j, data) in answer_line_iter.enumerate() {
+        for (j, data) in whole_data.clone().into_iter().enumerate() {
             if n * i <= j && j < n * (i+1) {
                 validation_data.push(data);
             } else {

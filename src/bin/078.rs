@@ -24,11 +24,15 @@ fn main() {
     let neg_lines = sentiment_utils::create_lines_from_latin1(neg_raw_texts)
         .collect::<Vec<_>>();
 
+    let whole_data = sentiment_utils::create_answers_iter(pos_lines.iter(), neg_lines.iter())
+        .zip(pos_lines.iter().chain(neg_lines.iter()))
+        .collect::<Vec<_>>();
+
     let k = 5;
     let learning_n = 1000;
     let threshold = 0.5;
 
-    let statics = sentiment_utils::k_cross_validation(k, learning_n, threshold, pos_lines, neg_lines)
+    let statics = sentiment_utils::k_cross_validation(k, learning_n, threshold, whole_data)
         .iter()
         .fold(logistic_regression::LogisticRegressionStatics::new(), |sum, stats| sum.add_statics(stats));
     println!(
