@@ -6,7 +6,15 @@
   "artists_json_url": "http://localhost:8000/data/artist.json.gz",
   "country_json_url": "http://localhost:8000/data/jawiki-country.json.gz",
   "movie_review_data_url": "http://localhost:8000/data/rt-polaritydata.tar.gz",
+  "enwiki_corpus_urls": [
+    "http://localhost:8000/data/enwiki-20150112-400-r10-105752.txt.bz2.a",
+    "http://localhost:8000/data/enwiki-20150112-400-r10-105752.txt.bz2.b",
+    "http://localhost:8000/data/enwiki-20150112-400-r10-105752.txt.bz2.c",
+    "http://localhost:8000/data/enwiki-20150112-400-r10-105752.txt.bz2.d",
+    "http://localhost:8000/data/enwiki-20150112-400-r10-105752.txt.bz2.e"
+  ],
   "sentiment_path": "tmp/sentiment.txt",
   "wordnet_dict_path": "tmp/WordNet-3.0/dict/",
+  "enwiki_corpus_path": "tmp/enwiki_corpus_path.txt",
   "others_token": "OTHERS_TOKEN"
 }

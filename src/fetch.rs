@@ -3,6 +3,7 @@ extern crate flate2;
 extern crate serde_json;
 extern crate regex;
 extern crate tar;
+extern crate bzip2;
 
 use std::io;
 use std::io::{Read, BufRead, BufReader, ErrorKind};
@@ -15,6 +16,7 @@ use self::flate2::read::GzDecoder;
 use self::serde_json::Value;
 use self::regex::Regex;
 use self::tar::Archive;
+use self::bzip2::read::BzDecoder;
 
 use artist::Artist;
 
@@ -26,6 +28,29 @@ pub fn reader(client: client::Client, url: &str)
     -> Result<impl BufRead, Box<Error>> {
     let res = try!(client.get(url).send());
     Ok(BufReader::new(res))
+}
+
+pub fn read_urls(client: &client::Client, urls: Vec<String>)
+    ->Result<Vec<u8>, Box<Error>> {
+    let mut buf = Vec::new();
+    for url in urls.into_iter() {
+        let res = try!(client.get(url.as_str()).send());
+        let mut bytes = BufReader::new(res)
+            .bytes()
+            .filter_map(|byte| byte.ok())
+            .collect::<Vec<_>>();
+        buf.append(&mut bytes);
+    }
+    Ok(buf)
+}
+
+pub fn bzip2_to_string<R>(reader: R)
+    -> Result<String, Box<Error>> 
+    where R: Read {
+    let mut decompressor = BzDecoder::new(reader);
+    let mut text = String::new();
+    try!(decompressor.read_to_string(&mut text));
+    Ok(text)
 }
 
 pub fn string(client: client::Client, url: &str)

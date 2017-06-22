@@ -9,13 +9,15 @@ use std::io::Read;
 pub struct Config {
     pub redis_host: String,
     pub mongo_host: String,
+    pub iron_host: String,
     pub neko_text_url: String,
     pub artists_json_url: String,
     pub country_json_url: String,
-    pub iron_host: String,
     pub movie_review_data_url: String,
+    pub enwiki_corpus_urls: Vec<String>,
     pub sentiment_path: String,
     pub wordnet_dict_path: String,
+    pub enwiki_corpus_path: String,
     pub others_token: String,
 }
 
