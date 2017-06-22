@@ -1,0 +1,9 @@
+etc/data/artist.json.gz filter=lfs diff=lfs merge=lfs -text
+etc/data/jawiki-country.json.gz filter=lfs diff=lfs merge=lfs -text
+etc/data/neko.txt filter=lfs diff=lfs merge=lfs -text
+etc/data/rt-polaritydata.tar.gz filter=lfs diff=lfs merge=lfs -text
+etc/data/enwiki-20150112-400-r10-105752.txt.bz2.a filter=lfs diff=lfs merge=lfs -text
+etc/data/enwiki-20150112-400-r10-105752.txt.bz2.b filter=lfs diff=lfs merge=lfs -text
+etc/data/enwiki-20150112-400-r10-105752.txt.bz2.c filter=lfs diff=lfs merge=lfs -text
+etc/data/enwiki-20150112-400-r10-105752.txt.bz2.d filter=lfs diff=lfs merge=lfs -text
+etc/data/enwiki-20150112-400-r10-105752.txt.bz2.e filter=lfs diff=lfs merge=lfs -text
