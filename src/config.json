@@ -15,6 +15,9 @@
   ],
   "sentiment_path": "tmp/sentiment.txt",
   "wordnet_dict_path": "tmp/WordNet-3.0/dict/",
-  "enwiki_corpus_path": "tmp/enwiki_corpus_path.txt",
+  "enwiki_corpus_path": "tmp/enwiki_corpus.txt",
+  "tc_counter_bin_path": "tmp/tc_counter.bin",
+  "t_counter_bin_path": "tmp/t_counter.bin",
+  "c_counter_bin_path": "tmp/c_counter.bin",
   "others_token": "OTHERS_TOKEN"
 }
