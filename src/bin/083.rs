@@ -101,10 +101,19 @@ fn main() {
         }
     }
 
+    let ti_counter = t_counter.into_iter()
+        .enumerate()
+        .map(|(i, (k, v))| (k, (v, i)))
+        .collect::<HashMap<&usize, (usize, usize)>>();
+    let ci_counter = c_counter.into_iter()
+        .enumerate()
+        .map(|(i, (k, v))| (k, (v, i)))
+        .collect::<HashMap<&usize, (usize, usize)>>();
+
     bin_utils::dump(&config.words_map_bin_path, &words_map);
     bin_utils::dump(&config.tc_counter_bin_path, &tc_counter);
-    bin_utils::dump(&config.t_counter_bin_path, &t_counter);
-    bin_utils::dump(&config.c_counter_bin_path, &c_counter);
+    bin_utils::dump(&config.ti_counter_bin_path, &ti_counter);
+    bin_utils::dump(&config.ci_counter_bin_path, &ci_counter);
 
     println!("N = {}", i);
 }

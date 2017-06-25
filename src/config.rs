@@ -20,8 +20,9 @@ pub struct Config {
     pub enwiki_corpus_path: String,
     pub words_map_bin_path: String,
     pub tc_counter_bin_path: String,
-    pub t_counter_bin_path: String,
-    pub c_counter_bin_path: String,
+    pub ti_counter_bin_path: String,
+    pub ci_counter_bin_path: String,
+    pub matrix_bin_path: String,
     pub others_token: String,
 }
 

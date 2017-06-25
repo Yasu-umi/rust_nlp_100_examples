@@ -17,3 +17,4 @@ pub mod sentiment_utils;
 pub mod wordnet_utils;
 pub mod logistic_regression;
 pub mod bin_utils;
+pub mod dok_matrix;
