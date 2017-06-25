@@ -16,3 +16,4 @@ pub mod mongo_utils;
 pub mod sentiment_utils;
 pub mod wordnet_utils;
 pub mod logistic_regression;
+pub mod bin_utils;

@@ -16,6 +16,7 @@
   "sentiment_path": "tmp/sentiment.txt",
   "wordnet_dict_path": "tmp/WordNet-3.0/dict/",
   "enwiki_corpus_path": "tmp/enwiki_corpus.txt",
+  "words_map_bin_path": "tmp/words_map.bin",
   "tc_counter_bin_path": "tmp/tc_counter.bin",
   "t_counter_bin_path": "tmp/t_counter.bin",
   "c_counter_bin_path": "tmp/c_counter.bin",

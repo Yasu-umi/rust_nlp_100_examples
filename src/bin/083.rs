@@ -1,18 +1,18 @@
 #!rust run
+#![feature(ord_max_min)]
 
 extern crate nlp_100_examples;
-extern crate regex;
 extern crate rand;
-extern crate bincode;
+extern crate serde;
 
 use nlp_100_examples::*;
 use rand::Rng;
-use bincode::{serialize_into, Infinite};
 
 use std::fs;
 use std::path::Path;
-use std::io::{BufRead, BufReader, BufWriter};
-use std::collections::HashMap;
+use std::io::{BufRead, BufReader};
+use std::collections::{HashMap, HashSet};
+use std::collections::hash_map::RandomState;
 
 
 fn main() {
@@ -43,35 +43,57 @@ fn main() {
                 .collect::<Vec<String>>()
         )
         .collect::<Vec<Vec<String>>>();
+    println!("create words_by_line");
+
+    let words_map = words_by_line.iter()
+        .flat_map(|words| words)
+        .collect::<HashSet<&String, RandomState>>()
+        .into_iter()
+        .enumerate()
+        .map(|(idx, word)| (word, idx))
+        .collect::<HashMap<&String, usize>>();
+    println!("create words_map");
 
     let window_sets_by_line = words_by_line.iter()
-        .map(|words|
-            (0..words.len())
-                .map(|word_pos| {
-                    let window_size = rand::thread_rng().gen_range(min_window_size, max_window_size);
-                    let window_start = if window_size < word_pos { word_pos - window_size } else { 0 };
-                    let window_end = if 1 < word_pos { word_pos - 1 } else { 0 };
-                    (
-                        word_pos,
-                        (window_start..window_end)
-                            .chain((word_pos + 1)..(word_pos + window_size))
-                            .collect::<Vec<usize>>()
-                    )
-                })
-                .collect::<Vec<(usize, Vec<usize>)>>()
-        );
+        .filter_map(|words| {
+            let words_len = words.len();
+            if words_len <= 1 {
+                None
+            } else {
+                let window_set = words.iter()
+                    .enumerate()
+                    .map(|(word_pos, word)| {
+                        let window_size = rand::thread_rng().gen_range(min_window_size, max_window_size);
+                        let window_start = if window_size < word_pos { word_pos - window_size } else { 0 };
+                        let window_end = if 1 < word_pos { word_pos - 1 } else { 0 };
+                        let window = (window_start..window_end)
+                            .chain((word_pos + 1).min(words_len)..(word_pos + window_size).min(words_len))
+                            .map(|window_pos|
+                                words_map.get(
+                                    words.get(window_pos)
+                                        .expect("can't find window word")
+                                ).expect("can't find word")
+                            )
+                            .collect::<Vec<&usize>>();
+                        (
+                            words_map.get(&word).expect("can't find word"),
+                            window
+                        )
+                    })
+                    .collect::<Vec<(&usize, Vec<&usize>)>>();
+                Some(window_set)
+            }
+        });
 
-    let mut tc_counter: HashMap<(&String, &String), u32> = HashMap::new();
-    let mut c_counter: HashMap<&String, u32> = HashMap::new();
-    let mut t_counter: HashMap<&String, u32> = HashMap::new();
+    let mut tc_counter: HashMap<(&usize, &usize), usize> = HashMap::new();
+    let mut c_counter: HashMap<&usize, usize> = HashMap::new();
+    let mut t_counter: HashMap<&usize, usize> = HashMap::new();
     let mut i = 0;
-    for (window_sets, words) in window_sets_by_line.zip(words_by_line.iter()) {
+    for window_sets in window_sets_by_line {
         for window_set in window_sets.iter() {
-            let word = words.get(window_set.0)
-                .expect("can't get word");
-            for window in window_set.1.iter().filter_map(|pos| words.get(*pos)) {
-                *tc_counter.entry((word, window)).or_insert(0) += 1;
-                *t_counter.entry(word).or_insert(0) += 1;
+            for window in window_set.1.iter() {
+                *tc_counter.entry((&window_set.0, window)).or_insert(0) += 1;
+                *t_counter.entry(&window_set.0).or_insert(0) += 1;
                 *c_counter.entry(window).or_insert(0) += 1;
                 i += 1;
                 if i % 1000000 == 0 { println!("{}", i); }
@@ -79,27 +101,10 @@ fn main() {
         }
     }
 
+    bin_utils::dump(&config.words_map_bin_path, &words_map);
+    bin_utils::dump(&config.tc_counter_bin_path, &tc_counter);
+    bin_utils::dump(&config.t_counter_bin_path, &t_counter);
+    bin_utils::dump(&config.c_counter_bin_path, &c_counter);
+
     println!("N = {}", i);
-
-    let f_tc_counter = fs::File::create(&config.tc_counter_bin_path)
-        .expect("Failed to create tc_counter.bin");
-    let mut w_tc_counter = BufWriter::new(&f_tc_counter);
-
-    let f_t_counter = fs::File::create(&config.t_counter_bin_path)
-        .expect("Failed to create tc_counter.bin");
-    let mut w_t_counter = BufWriter::new(&f_t_counter);
-
-    let f_c_counter = fs::File::create(&config.c_counter_bin_path)
-        .expect("Failed to create tc_counter.bin");
-    let mut w_c_counter = BufWriter::new(&f_c_counter);
-
-    serialize_into(&mut w_tc_counter, &tc_counter, Infinite)
-        .expect("Failed to dump tc_counter");
-    println!("dump tc_counter");
-    serialize_into(&mut w_t_counter, &t_counter, Infinite)
-        .expect("Failed to dump t_counter");
-    println!("dump t_counter");
-    serialize_into(&mut w_c_counter, &c_counter, Infinite)
-        .expect("Failed to dump c_counter");
-    println!("dump c_counter");
 }
